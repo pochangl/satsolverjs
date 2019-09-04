@@ -4,7 +4,8 @@ import { precedence } from '../alias'
 describe('ast', () => {
   it('should have symbol', () => {
     expect(ast('a not b')).toMatchObject({
-      symbol: '¬'
+      symbol: '¬',
+      name: 'not',
     })
   })
 
@@ -46,6 +47,7 @@ describe('ast', () => {
   it('should handles atomic', () => {
     expect(ast(' a b c ')).toEqual({
       symbol: 'atomic',
+      name: 'atomic',
       value: 'a b c'
     })
   })

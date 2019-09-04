@@ -1,5 +1,6 @@
 interface ISplit {
   symbol: string
+  name: string
   operands: Array<string>
 }
 interface IAlias {
@@ -23,6 +24,7 @@ function alias(symbol: string, name: string): IAlias {
         const right = s.slice(index + name.length + 2).trim()
         return {
           symbol,
+          name,
           operands: [left, right].filter(x => x)
         }
       }

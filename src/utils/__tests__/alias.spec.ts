@@ -9,6 +9,7 @@ describe('Alias.split', () => {
     const alias = aliases['and']
     expect(alias.split('a and b')).toMatchObject({
       symbol: '∧',
+      name: 'and',
       operands: ['a', 'b']
     })
   })
@@ -17,6 +18,7 @@ describe('Alias.split', () => {
     const alias = aliases['or']
     expect(alias.split('a or b')).toMatchObject({
       symbol: '∨',
+      name: 'or',
       operands: ['a', 'b']
     })
   })
@@ -25,6 +27,7 @@ describe('Alias.split', () => {
     const alias = aliases['not']
     expect(alias.split('a not b')).toMatchObject({
       symbol: '¬',
+      name: 'not',
       operands: ['a', 'b']
     })
   })
@@ -33,6 +36,7 @@ describe('Alias.split', () => {
     const alias = aliases['implies']
     expect(alias.split('a implies b')).toMatchObject({
       symbol: '→',
+      name: 'implies',
       operands: ['a', 'b']
     })
   })
