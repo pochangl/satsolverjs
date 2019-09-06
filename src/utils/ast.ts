@@ -1,10 +1,9 @@
 import { precedence } from './alias'
 
 export interface IAbstractSyntaxTree {
-  symbol: string
   name: string
   value?: string
-  operands?: Array<IAbstractSyntaxTree>
+  operands: Array<IAbstractSyntaxTree>
 }
 
 export function ast(str: string): IAbstractSyntaxTree {
@@ -13,7 +12,6 @@ export function ast(str: string): IAbstractSyntaxTree {
     if (split) {
       // matched
       return {
-        symbol: split.symbol,
         name: split.name,
         operands: split.operands.map(ast)
       }
@@ -21,8 +19,8 @@ export function ast(str: string): IAbstractSyntaxTree {
   }
   // no match
   return {
-    symbol: 'atomic',
     name: 'atomic',
+    operands: [],
     value: str.trim()
   }
 }

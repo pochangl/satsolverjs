@@ -2,21 +2,14 @@ import { ast } from '../ast'
 import { precedence } from '../alias'
 
 describe('ast', () => {
-  it('should have symbol', () => {
-    expect(ast('a not b')).toMatchObject({
-      symbol: '¬',
-      name: 'not',
-    })
-  })
-
   it('should handles 2 oeprands', () => {
     expect(ast('a implies b')).toMatchObject({
       operands: [
         {
-          symbol: 'atomic',
+          name: 'atomic',
           value: 'a'
         }, {
-          symbol: 'atomic',
+          name: 'atomic',
           value: 'b'
         }
       ]
@@ -27,7 +20,7 @@ describe('ast', () => {
     expect(ast('a implies')).toMatchObject({
       operands: [
         {
-          symbol: 'atomic',
+          name: 'atomic',
           value: 'a'
         }
       ]
@@ -37,7 +30,7 @@ describe('ast', () => {
     expect(ast('implies a')).toMatchObject({
       operands: [
         {
-          symbol: 'atomic',
+          name: 'atomic',
           value: 'a'
         }
       ]
@@ -46,9 +39,9 @@ describe('ast', () => {
 
   it('should handles atomic', () => {
     expect(ast(' a b c ')).toEqual({
-      symbol: 'atomic',
       name: 'atomic',
-      value: 'a b c'
+      value: 'a b c',
+      operands: []
     })
   })
 })
