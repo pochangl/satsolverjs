@@ -33,8 +33,8 @@ function alias(symbol: string, name: string): IAlias {
 }
 
 export const precedence: Array<IAlias> = [
+  alias('→', 'implies'),
   alias('¬', 'not'),
   alias('∧', 'and'),
   alias('∨', 'or'),
-  alias('→', 'implies')
 ]

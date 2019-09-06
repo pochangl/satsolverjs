@@ -1,7 +1,7 @@
 import { ast } from '../ast'
 import { precedence } from '../alias'
 
-describe('ast', () => {
+describe('ast basic', () => {
   it('should handles 2 oeprands', () => {
     expect(ast('a implies b')).toMatchObject({
       operands: [
@@ -42,6 +42,44 @@ describe('ast', () => {
       name: 'atomic',
       value: 'a b c',
       operands: []
+    })
+  })
+})
+
+describe('ast nested', () => {
+  test('a and b implies b implies c', () => {
+    expect(ast('a and b implies c implies d')).toEqual({
+      name: 'implies',
+      operands: [
+        {
+          name: 'and',
+          operands: [
+            {
+              name: 'atomic',
+              value: 'a',
+              operands: []
+            }, {
+              name: 'atomic',
+              value: 'b',
+              operands: []
+            }
+          ]
+        },
+        {
+          name: 'implies',
+          operands: [
+            {
+              name: 'atomic',
+              value: 'c',
+              operands: []
+            }, {
+              name: 'atomic',
+              value: 'd',
+              operands: []
+            }
+          ]
+        }
+      ]
     })
   })
 })
