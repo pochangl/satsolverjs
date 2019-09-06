@@ -47,36 +47,34 @@ describe('ast basic', () => {
 })
 
 describe('ast nested', () => {
-  test('a and b implies b implies c', () => {
-    expect(ast('a and b implies c implies d')).toEqual({
+  test('precedence', () => {
+    expect(ast('a and b implies c or d and not e implies f')).toEqual({
       name: 'implies',
       operands: [
         {
-          name: 'and',
-          operands: [
-            {
-              name: 'atomic',
-              value: 'a',
-              operands: []
-            }, {
-              name: 'atomic',
-              value: 'b',
-              operands: []
-            }
+          name: 'and', operands: [
+            { name: 'atomic', value: 'a', operands: [] },
+            { name: 'atomic', value: 'b', operands: [] }
           ]
         },
         {
-          name: 'implies',
-          operands: [
+          name: 'implies', operands: [
             {
-              name: 'atomic',
-              value: 'c',
-              operands: []
-            }, {
-              name: 'atomic',
-              value: 'd',
-              operands: []
-            }
+              name: 'or', operands: [
+                { name: 'atomic', value: 'c', operands: [] },
+                {
+                  name: 'and', operands: [
+                    { name: 'atomic', value: 'd', operands: [] },
+                    {
+                      name: 'not', operands: [
+                        { name: 'atomic', value: 'e', operands: [] }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            { name: 'atomic', value: 'f', operands: [] }
           ]
         }
       ]
