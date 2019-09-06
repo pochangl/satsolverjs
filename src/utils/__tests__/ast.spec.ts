@@ -47,37 +47,81 @@ describe('ast basic', () => {
 })
 
 describe('ast nested', () => {
-  test('precedence', () => {
-    expect(ast('a and b implies c or d and not e implies f')).toEqual({
+  test('implies/or', () => {
+    expect(ast('a or b implies c or d')).toMatchObject({
       name: 'implies',
-      operands: [
-        {
-          name: 'and', operands: [
-            { name: 'atomic', value: 'a', operands: [] },
-            { name: 'atomic', value: 'b', operands: [] }
-          ]
-        },
-        {
-          name: 'implies', operands: [
-            {
-              name: 'or', operands: [
-                { name: 'atomic', value: 'c', operands: [] },
-                {
-                  name: 'and', operands: [
-                    { name: 'atomic', value: 'd', operands: [] },
-                    {
-                      name: 'not', operands: [
-                        { name: 'atomic', value: 'e', operands: [] }
-                      ]
-                    }
-                  ]
-                }
-              ]
+      operands: [{
+        name: 'or', operands: [
+          { name: 'atomic', value: 'a' },
+          { name: 'atomic', value: 'b' },
+        ]
+      }, {
+        name: 'or', operands: [
+          { name: 'atomic', value: 'c' },
+          { name: 'atomic', value: 'd' },
+        ]
+      }]
+    })
+  })
+
+  test('or/and', () => {
+    expect(ast('a and b or c and d')).toMatchObject({
+      name: 'or',
+      operands: [{
+        name: 'and', operands: [
+          { name: 'atomic', value: 'a' },
+          { name: 'atomic', value: 'b' },
+        ]
+      }, {
+        name: 'and', operands: [
+          { name: 'atomic', value: 'c' },
+          { name: 'atomic', value: 'd' },
+        ]
+      }]
+    })
+  })
+
+  test('and/not', () => {
+    expect(ast('not a and not b')).toMatchObject({
+      name: 'and',
+      operands: [{
+        name: 'not', operands: [
+          { name: 'atomic', value: 'a' }
+        ]
+      }, {
+        name: 'not', operands: [
+          { name: 'atomic', value: 'b' }
+        ]
+      }]
+    })
+  })
+
+
+  test('complex', () => {
+    expect(ast('a and b implies c or d and not e implies f')).toMatchObject({
+      name: 'implies',
+      operands: [{
+        name: 'and', operands: [
+          { name: 'atomic', value: 'a' },
+          { name: 'atomic', value: 'b' }
+        ]
+      }, {
+        name: 'implies', operands: [{
+          name: 'or', operands: [{
+            name: 'atomic', value: 'c'
+          }, {
+            name: 'and', operands: [{
+              name: 'atomic', value: 'd'
             },
-            { name: 'atomic', value: 'f', operands: [] }
-          ]
-        }
-      ]
+            {
+              name: 'not', operands: [{
+                name: 'atomic', value: 'e'
+              }]
+            }]
+          }]
+        },
+        { name: 'atomic', value: 'f' }]
+      }]
     })
   })
 })
