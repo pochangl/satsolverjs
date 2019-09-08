@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test:unit": "vue-cli-service test:unit"
+    "test:unit": "vue-cli-service test:unit --watch"
   },
   "dependencies": {
     "core-js": "^2.6.5",
@@ -19,6 +19,7 @@
     "vuetify": "^2.0.11"
   },
   "devDependencies": {
+    "pegjs": "^0.10.0",
     "@types/jest": "^23.1.4",
     "@vue/cli-plugin-babel": "^3.11.0",
     "@vue/cli-plugin-pwa": "^3.11.0",
