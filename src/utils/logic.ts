@@ -154,7 +154,7 @@ function logicfy(ast: IAbstractSyntaxTree): Logic {
 export function toLogicTree(ast: IAbstractSyntaxTree): Logic {
   /*
     make ast to logic tree and merge its structure
-    for example:
+    merge structure example:
       example1
         a and (b and c) => a and b and c
       example2
