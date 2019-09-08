@@ -11,6 +11,10 @@ interface ILogics {
 
 
 abstract class Logic {
+  /*
+    logic class for handling logic operation
+  */
+
   // merging similar logic
   public abstract merge(): Logic
 
@@ -43,6 +47,10 @@ export class Atomic extends Logic {
     return this.clauses.length === 0 && !!this.value
   }
   merge() {
+    /*
+      atomic is the most basic element
+      nothing to merge
+    */
     return this
   }
 }
@@ -52,6 +60,11 @@ export class Not extends Logic {
     return this.clauses.length === 1
   }
   merge(): Logic {
+    /*
+      merge not logic
+      for example:
+        not not b => b
+    */
     if (this.clauses[0] instanceof Not) {
       return this.clauses[0].clauses[0]
     }
@@ -64,6 +77,11 @@ export class Or extends Logic {
     return this.clauses.length >= 2
   }
   merge(): Logic {
+    /*
+      merge or logic
+      for example:
+        a or (b or c) => (a or b or c)
+    */
     for (const clause of this.clauses) {
       if (clause instanceof Or) {
         this.clauses = [
@@ -82,6 +100,11 @@ export class And extends Logic {
     return this.clauses.length >= 2
   }
   merge(): Logic {
+    /*
+      merge and logic
+      for example:
+        a and (b and c) => (a and b and c)
+    */
     for (const clause of this.clauses) {
       if (clause instanceof And) {
         this.clauses = [
@@ -118,6 +141,9 @@ const logics: ILogics = {
 }
 
 function logicfy(ast: IAbstractSyntaxTree): Logic {
+  /*
+    ast node to logic structure
+  */
   const op = logics[ast.name]
   return op(
     ast,
@@ -126,7 +152,15 @@ function logicfy(ast: IAbstractSyntaxTree): Logic {
 }
 
 export function toLogicTree(ast: IAbstractSyntaxTree): Logic {
-  const tree = logicfy(ast)
+  /*
+    make ast to logic tree and merge its structure
+    for example:
+      example1
+        a and (b and c) => a and b and c
+      example2
+        not not c => c
+  */
+  const tree = logicfy(ast).runMerge()
   tree.runValidation()
-  return tree.runMerge()
+  return tree
 }

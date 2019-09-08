@@ -7,6 +7,9 @@ export interface IAbstractSyntaxTree {
 }
 
 export function ast(str: string): IAbstractSyntaxTree {
+  /*
+    convert string to ast tree
+  */
   for (const splitter of precedence) {
     const split = splitter.split(str)
     if (split) {
