@@ -6,21 +6,25 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test:unit": "vue-cli-service test:unit --watch"
+    "test:unit": "vue-cli-service test:unit --watch",
+    "parser": "pegjs -o src/utils/parser/parser.js src/utils/parser/parser.pegjs"
   },
   "dependencies": {
+    "@types/pegjs": "^0.10.1",
     "core-js": "^2.6.5",
     "logic-solver": "^2.0.1",
+    "pegjs": "^0.10.0",
     "register-service-worker": "^1.6.2",
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.2",
     "vue-property-decorator": "^8.1.0",
+    "vue-resource": "^1.5.1",
     "vue-router": "^3.0.3",
     "vuetify": "^2.0.11"
   },
   "devDependencies": {
-    "pegjs": "^0.10.0",
     "@types/jest": "^23.1.4",
+    "@types/vue-resource": "^0.9.34",
     "@vue/cli-plugin-babel": "^3.11.0",
     "@vue/cli-plugin-pwa": "^3.11.0",
     "@vue/cli-plugin-typescript": "^3.11.0",
@@ -37,6 +41,7 @@
     "tslint-config-prettier": "^1.18.0",
     "tslint-config-standard": "^8.0.1",
     "typescript": "^3.4.3",
+    "url-loader": "^2.1.0",
     "vue-template-compiler": "^2.6.10"
   }
 }

@@ -2,9 +2,9 @@ import { ast } from '../ast'
 import { precedence } from '../alias'
 
 describe('ast basic', () => {
-  it('should handles 2 oeprands', () => {
+  it('should handles 2 clauses', () => {
     expect(ast('a implies b')).toMatchObject({
-      operands: [
+      clauses: [
         {
           name: 'atomic',
           value: 'a'
@@ -15,20 +15,10 @@ describe('ast basic', () => {
       ]
     })
   })
-  it('should handles 1 operands', () => {
-    // front
-    expect(ast('a implies')).toMatchObject({
-      operands: [
-        {
-          name: 'atomic',
-          value: 'a'
-        }
-      ]
-    })
-
-    // rear
-    expect(ast('implies a')).toMatchObject({
-      operands: [
+  it('should handles 1 clauses', () => {
+    // prefix
+    expect(ast('not a')).toMatchObject({
+      clauses: [
         {
           name: 'atomic',
           value: 'a'
@@ -38,10 +28,10 @@ describe('ast basic', () => {
   })
 
   it('should handles atomic', () => {
-    expect(ast(' a b c ')).toEqual({
+    expect(ast('b ')).toEqual({
       name: 'atomic',
-      value: 'a b c',
-      operands: []
+      value: 'b',
+      clauses: []
     })
   })
 })
@@ -50,13 +40,13 @@ describe('ast nested', () => {
   test('implies/or', () => {
     expect(ast('a or b implies c or d')).toMatchObject({
       name: 'implies',
-      operands: [{
-        name: 'or', operands: [
+      clauses: [{
+        name: 'or', clauses: [
           { name: 'atomic', value: 'a' },
           { name: 'atomic', value: 'b' },
         ]
       }, {
-        name: 'or', operands: [
+        name: 'or', clauses: [
           { name: 'atomic', value: 'c' },
           { name: 'atomic', value: 'd' },
         ]
@@ -67,13 +57,13 @@ describe('ast nested', () => {
   test('or/and', () => {
     expect(ast('a and b or c and d')).toMatchObject({
       name: 'or',
-      operands: [{
-        name: 'and', operands: [
+      clauses: [{
+        name: 'and', clauses: [
           { name: 'atomic', value: 'a' },
           { name: 'atomic', value: 'b' },
         ]
       }, {
-        name: 'and', operands: [
+        name: 'and', clauses: [
           { name: 'atomic', value: 'c' },
           { name: 'atomic', value: 'd' },
         ]
@@ -84,12 +74,12 @@ describe('ast nested', () => {
   test('and/not', () => {
     expect(ast('not a and not b')).toMatchObject({
       name: 'and',
-      operands: [{
-        name: 'not', operands: [
+      clauses: [{
+        name: 'not', clauses: [
           { name: 'atomic', value: 'a' }
         ]
       }, {
-        name: 'not', operands: [
+        name: 'not', clauses: [
           { name: 'atomic', value: 'b' }
         ]
       }]
@@ -100,21 +90,21 @@ describe('ast nested', () => {
   test('complex', () => {
     expect(ast('a and b implies c or d and not e implies f')).toMatchObject({
       name: 'implies',
-      operands: [{
-        name: 'and', operands: [
+      clauses: [{
+        name: 'and', clauses: [
           { name: 'atomic', value: 'a' },
           { name: 'atomic', value: 'b' }
         ]
       }, {
-        name: 'implies', operands: [{
-          name: 'or', operands: [{
+        name: 'implies', clauses: [{
+          name: 'or', clauses: [{
             name: 'atomic', value: 'c'
           }, {
-            name: 'and', operands: [{
+            name: 'and', clauses: [{
               name: 'atomic', value: 'd'
             },
             {
-              name: 'not', operands: [{
+              name: 'not', clauses: [{
                 name: 'atomic', value: 'e'
               }]
             }]
