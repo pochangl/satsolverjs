@@ -1,5 +1,5 @@
 import { ast } from '../ast'
-import { toLogicTree, And, Or, Not, Atomic } from '../logic'
+import { toLogicTree } from '../logic'
 import { stringify } from '../test'
 
 function check_tree(input: string, expected: string) {

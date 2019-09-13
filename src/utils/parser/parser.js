@@ -181,7 +181,7 @@ function peg$parse(input, options) {
       peg$c18 = peg$classExpectation([" ", "\t", "\n", "\r", ",", "(", ")"], true, false),
       peg$c19 = function(val) {
         	return {
-          	name: 'atomic',
+          	name: 'variable',
               value: val.join('')
           }
         },

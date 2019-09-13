@@ -1,14 +1,12 @@
 import { IAbstractSyntaxTree } from './ast'
-import { createTempVar } from './variables'
 
 declare type ILogicTransformer = (ast: IAbstractSyntaxTree, clauses: Array<Logic>) => Logic
 
-declare type ICNF = Array<Array<string>>
+declare type ICNF = Array<Array<Variable | Not>>
 
 interface ILogics {
   [key: string]: ILogicTransformer
 }
-
 
 abstract class Logic implements IAbstractSyntaxTree {
   /*
@@ -45,8 +43,9 @@ abstract class Logic implements IAbstractSyntaxTree {
   }
 }
 
-export class Atomic extends Logic {
-  name = 'atomic'
+export class Variable extends Logic {
+  name = 'variable'
+
   isValid() {
     return this.clauses.length === 0 && !!this.value
   }
@@ -61,6 +60,7 @@ export class Atomic extends Logic {
 
 export class Not extends Logic {
   name = 'not'
+
   isValid() {
     return this.clauses.length === 1
   }
@@ -79,6 +79,7 @@ export class Not extends Logic {
 
 export class Or extends Logic {
   name = 'or'
+
   isValid() {
     return this.clauses.length >= 2
   }
@@ -103,6 +104,7 @@ export class Or extends Logic {
 
 export class And extends Logic {
   name = 'and'
+
   isValid() {
     return this.clauses.length >= 2
   }
@@ -126,8 +128,8 @@ export class And extends Logic {
 }
 
 const logics: ILogics = {
-  atomic(ast) {
-    return new Atomic([], ast.value)
+  variable(ast) {
+    return new Variable([], ast.value)
   },
   not(ast, clauses) {
     return new Not(clauses)

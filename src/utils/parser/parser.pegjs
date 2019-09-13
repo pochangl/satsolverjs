@@ -49,7 +49,7 @@ Not
 Variable
   = val:[^ \t\n\r,()]+ {
   	return {
-    	name: 'atomic',
+    	name: 'variable',
         value: val.join('')
     }
   }
