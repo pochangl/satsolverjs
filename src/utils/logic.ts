@@ -10,7 +10,7 @@ interface ILogics {
 }
 
 
-abstract class Logic {
+abstract class Logic implements IAbstractSyntaxTree {
   /*
     logic class for handling logic operation
   */
@@ -20,6 +20,9 @@ abstract class Logic {
 
   // for checking validity
   public abstract isValid(): boolean
+
+  // for debugging purpose
+  public abstract name: string
 
   clauses: Array<Logic>
   value?: string
@@ -43,6 +46,7 @@ abstract class Logic {
 }
 
 export class Atomic extends Logic {
+  name = 'atomic'
   isValid() {
     return this.clauses.length === 0 && !!this.value
   }
@@ -56,6 +60,7 @@ export class Atomic extends Logic {
 }
 
 export class Not extends Logic {
+  name = 'not'
   isValid() {
     return this.clauses.length === 1
   }
@@ -73,6 +78,7 @@ export class Not extends Logic {
 }
 
 export class Or extends Logic {
+  name = 'or'
   isValid() {
     return this.clauses.length >= 2
   }
@@ -96,6 +102,7 @@ export class Or extends Logic {
 }
 
 export class And extends Logic {
+  name = 'and'
   isValid() {
     return this.clauses.length >= 2
   }
@@ -147,7 +154,7 @@ function logicfy(ast: IAbstractSyntaxTree): Logic {
   const op = logics[ast.name]
   return op(
     ast,
-    ast.operands.map(logicfy)
+    ast.clauses.map(logicfy)
   )
 }
 

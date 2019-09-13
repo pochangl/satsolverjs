@@ -1,125 +1,72 @@
 import { ast } from '../ast'
 import { toLogicTree, And, Or, Not, Atomic } from '../logic'
+import { stringify } from '../test'
+
+function check_tree(input: string, expected: string) {
+  const treeAst = ast(input)
+  const logicTree = toLogicTree(treeAst)
+  const result = stringify(logicTree)
+  expect(result).toEqual(expected)
+}
 
 describe('toLogicTree', () => {
 
   test('nested', () => {
     // random nested structure
-    const treeAst = ast('a or b implies not b and c or d')
-    const logicTree = toLogicTree(treeAst)
-    expect(logicTree).toMatchObject(
-      new Or([
-        new Not([
-          new Or([
-            new Atomic([], 'a'),
-            new Atomic([], 'b'),
-          ])
-        ]),
-        new And([
-          new Not([
-            new Atomic([], 'b'),
-          ]),
-          new Atomic([], 'c'),
-        ]),
-        new Atomic([], 'd'),
-      ])
+    check_tree(
+      'a or b implies not b and c or d',
+      '((not (a or b)) or ((not b) and c) or d)'
     )
   })
 })
 
 describe('toLogicTree merging', () => {
   test('pure imply merge', () => {
-    const treeAst = ast('a implies b implies c')
-    const logicTree = toLogicTree(treeAst)
-    expect(logicTree).toEqual(
-      new Or([
-        new Not([
-          new Atomic([], 'a'),
-        ]),
-        new Not([
-          new Atomic([], 'b'),
-        ]),
-        new Atomic([], 'c'),
-      ])
+    check_tree(
+      'a implies b implies c',
+      '((not a) or (not b) or c)'
     )
   })
   test('pure \'or\' merge', () => {
-    const treeAst = ast('a or b or c')
-    const logicTree = toLogicTree(treeAst)
-    expect(logicTree).toEqual(
-      new Or([
-        new Atomic([], 'a'),
-        new Atomic([], 'b'),
-        new Atomic([], 'c'),
-      ])
+    check_tree(
+      'a or b or c',
+      '(a or b or c)'
     )
-
   })
 
   test('pure \'and\' merge', () => {
-    const treeAst = ast('a and b and c')
-    const logicTree = toLogicTree(treeAst)
-    expect(logicTree).toEqual(
-      new And([
-        new Atomic([], 'a'),
-        new Atomic([], 'b'),
-        new Atomic([], 'c'),
-      ])
+    check_tree(
+      'a and b and c',
+      '(a and b and c)'
     )
   })
 
   test('pure \'not\' merge', () => {
-    const treeAst = ast('not not a')
-    const logicTree = toLogicTree(treeAst)
-    expect(logicTree).toEqual(new Atomic([], 'a'))
+    check_tree(
+      'not not a',
+      'a'
+    )
   })
 
   test('mixed \'implies\' merge', () => {
-    const treeAst = ast('a or b implies c or d')
-    const logicTree = toLogicTree(treeAst)
-    expect(logicTree).toEqual(
-      new Or([
-        new Not([
-          new Or([
-            new Atomic([], 'a'),
-            new Atomic([], 'b'),
-          ])
-        ]),
-        new Atomic([], 'c'),
-        new Atomic([], 'd'),
-      ])
+    check_tree(
+      'a or b implies c or d',
+      '((not (a or b)) or c or d)'
     )
   })
 
   // nested
   test('mixed \'or\' merge', () => {
-    const treeAst = ast('not a or b and c or d')
-    const logicTree = toLogicTree(treeAst)
-    expect(logicTree).toMatchObject(
-      new Or([
-        new Not([
-          new Atomic([], 'a')
-        ]),
-        new And([
-          new Atomic([], 'b'),
-          new Atomic([], 'c')
-        ]),
-        new Atomic([], 'd'),
-      ])
+    check_tree(
+      'not a or b and c or d',
+      '((not a) or (b and c) or d)'
     )
   })
 
   test('mixed \'and\' merge', () => {
-    const treeAst = ast('a and not b and c')
-    const logicTree = toLogicTree(treeAst)
-    expect(logicTree).toMatchObject(
-      new And([
-        new Atomic([], 'a'),
-        new Not([
-          new Atomic([], 'b'),
-        ]),
-        new Atomic([], 'c'),
-      ])
+    check_tree(
+      'a and not b and c',
+      '(a and (not b) and c)'
     )
   })
 })
