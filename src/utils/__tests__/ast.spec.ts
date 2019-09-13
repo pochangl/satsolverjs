@@ -1,13 +1,6 @@
-import { ast, IAbstractSyntaxTree } from '../ast'
+import { ast } from '../ast'
 import { precedence } from '../alias'
-
-function stringify(tree: IAbstractSyntaxTree): string {
-  if (tree.name === 'atomic')
-    return tree.value as string
-  else if (tree.name === 'not')
-    return '(not ' + stringify(tree.clauses[0]) + ')'
-  return '(' + tree.clauses.map(stringify).join(' ' + tree.name + ' ') + ')'
-}
+import { stringify } from '../test'
 
 function check_ast(input: string, expected: string) {
   const tree = ast(input)
