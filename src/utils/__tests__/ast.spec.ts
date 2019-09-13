@@ -6,7 +6,7 @@ function stringify(tree: IAbstractSyntaxTree): string {
     return tree.value as string
   else if (tree.name === 'not')
     return '(not ' + stringify(tree.clauses[0]) + ')'
-  return '(' + stringify(tree.clauses[0]) + ' ' + tree.name + ' ' + stringify(tree.clauses[1]) + ')'
+  return '(' + tree.clauses.map(stringify).join(' ' + tree.name + ' ') + ')'
 }
 
 function check_ast(input: string, expected: string) {
