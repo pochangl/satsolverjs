@@ -1,69 +1,58 @@
 Expression
-  = _ expr:(ClauseChainOperator / Clause) _ {
-  	return expr
-  }
-
-ClauseChainOperator
-  = head:Clause space operator:'implies' space tail:(ClauseChainOperator / Clause) {
-  	return {
-      name: operator,
-      clauses: [head, tail]
-    }
-  }
-
-Clause
-  = klause:(Subclause / ChainOperator / BindOperator / Prefix / Atomic) {
-    return klause
-  }
-
-ChainOperator
-  = head: (Subclause / BindOperator / Prefix / Atomic) space operator:'or' space tail: Clause {
-  	return {
-      name: operator,
-      clauses: [head, tail]
-    }
-  }
-
-BindOperator
-  = left:(Subclause / Prefix / Atomic) space operator:'and' space right:Clause {
-  	return {
-      name: operator,
-      clauses: [left, right]
-    }
-  }
-
-Prefix
-  = 'not' space tail:Clause {
-    return {
-      name: 'not',
-      clauses: [tail]
-    }
+  = _ expression:Implies _ {
+  	return expression
   }
 
 Subclause
-  = "(" _ clause:Clause _ ")" {
-    return {
-      name: 'clause',
-      clauses: [
-        clause
-      ]
-    }
+  = "(" _ clause:Implies _ ")" {
+    return clause
   }
 
-Atomic
-  = val:Name {
+Implies
+  = head:Or space operator:'implies' space tail:Implies {
+  return {
+      name: operator,
+      clauses: [head, tail]
+    }
+  }
+  / Or
+
+
+Or
+  = head:And space operator:'or' space tail:Or {
+  	return {
+      name: operator,
+      clauses: [head, tail]
+    }
+  }
+  / And
+
+And
+  = head:Not space operator:'and' space tail:And {
+  	return {
+      name: operator,
+      clauses: [head, tail]
+    }
+  }
+  / Not
+
+Not
+  = operator:'not' space tail:Not {
+    return {
+      name: operator,
+      clauses: [tail]
+    }
+  }
+  / Subclause
+  / Variable
+
+Variable
+  = val:[^ \t\n\r,()]+ {
   	return {
     	name: 'atomic',
         value: val.join('')
     }
   }
-
-Name
-  = [^ \t\n\r,]+
-
-Set
-  = "{" clause: ( _ Atomic _ [,] )* "}"
-
 space
   = ' '+
 

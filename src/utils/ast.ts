@@ -4,7 +4,7 @@ import { Parser } from './parser'
 export interface IAbstractSyntaxTree {
   name: string
   value?: string
-  clauses?: Array<IAbstractSyntaxTree>
+  clauses: Array<IAbstractSyntaxTree>
 }
 const parser = Parser()
 export function ast(str: string): IAbstractSyntaxTree {

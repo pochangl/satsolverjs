@@ -1,117 +1,81 @@
-import { ast } from '../ast'
+import { ast, IAbstractSyntaxTree } from '../ast'
 import { precedence } from '../alias'
+
+function stringify(tree: IAbstractSyntaxTree): string {
+  if (tree.name === 'atomic')
+    return tree.value as string
+  else if (tree.name === 'not')
+    return '(not ' + stringify(tree.clauses[0]) + ')'
+  return '(' + stringify(tree.clauses[0]) + ' ' + tree.name + ' ' + stringify(tree.clauses[1]) + ')'
+}
+
+function check_ast(input: string, expected: string) {
+  const tree = ast(input)
+  const result = stringify(tree)
+  expect(result).toEqual(expected)
+}
 
 describe('ast basic', () => {
   it('should handles 2 clauses', () => {
-    expect(ast('a implies b')).toMatchObject({
-      clauses: [
-        {
-          name: 'atomic',
-          value: 'a'
-        }, {
-          name: 'atomic',
-          value: 'b'
-        }
-      ]
-    })
+    check_ast(
+      'a implies b',
+      '(a implies b)'
+    )
   })
   it('should handles 1 clauses', () => {
     // prefix
-    expect(ast('not a')).toMatchObject({
-      clauses: [
-        {
-          name: 'atomic',
-          value: 'a'
-        }
-      ]
-    })
+    check_ast(
+      'not a',
+      '(not a)'
+    )
   })
 
   it('should handles atomic', () => {
-    expect(ast('b ')).toEqual({
-      name: 'atomic',
-      value: 'b',
-      clauses: []
-    })
+    check_ast('b', 'b')
   })
 })
 
 describe('ast nested', () => {
   test('implies/or', () => {
-    expect(ast('a or b implies c or d')).toMatchObject({
-      name: 'implies',
-      clauses: [{
-        name: 'or', clauses: [
-          { name: 'atomic', value: 'a' },
-          { name: 'atomic', value: 'b' },
-        ]
-      }, {
-        name: 'or', clauses: [
-          { name: 'atomic', value: 'c' },
-          { name: 'atomic', value: 'd' },
-        ]
-      }]
-    })
+    check_ast(
+      'a or b implies c or d',
+      '((a or b) implies (c or d))'
+    )
   })
 
   test('or/and', () => {
-    expect(ast('a and b or c and d')).toMatchObject({
-      name: 'or',
-      clauses: [{
-        name: 'and', clauses: [
-          { name: 'atomic', value: 'a' },
-          { name: 'atomic', value: 'b' },
-        ]
-      }, {
-        name: 'and', clauses: [
-          { name: 'atomic', value: 'c' },
-          { name: 'atomic', value: 'd' },
-        ]
-      }]
-    })
+    check_ast(
+      'a and b or c and d',
+      '((a and b) or (c and d))'
+    )
   })
 
   test('and/not', () => {
-    expect(ast('not a and not b')).toMatchObject({
-      name: 'and',
-      clauses: [{
-        name: 'not', clauses: [
-          { name: 'atomic', value: 'a' }
-        ]
-      }, {
-        name: 'not', clauses: [
-          { name: 'atomic', value: 'b' }
-        ]
-      }]
-    })
+    check_ast(
+      'not a and not b',
+      '((not a) and (not b))'
+    )
+  })
+  test('clause', () => {
+    check_ast(
+      '(a and b)',
+      '(a and b)'
+    )
+    check_ast(
+      '( a implies b ) and (c implies d)',
+      '((a implies b) and (c implies d))'
+    )
+    check_ast(
+      '(a implies (b or e)) and (c implies d)',
+      '((a implies (b or e)) and (c implies d))'
+    )
   })
 
 
   test('complex', () => {
-    expect(ast('a and b implies c or d and not e implies f')).toMatchObject({
-      name: 'implies',
-      clauses: [{
-        name: 'and', clauses: [
-          { name: 'atomic', value: 'a' },
-          { name: 'atomic', value: 'b' }
-        ]
-      }, {
-        name: 'implies', clauses: [{
-          name: 'or', clauses: [{
-            name: 'atomic', value: 'c'
-          }, {
-            name: 'and', clauses: [{
-              name: 'atomic', value: 'd'
-            },
-            {
-              name: 'not', clauses: [{
-                name: 'atomic', value: 'e'
-              }]
-            }]
-          }]
-        },
-        { name: 'atomic', value: 'f' }]
-      }]
-    })
+    check_ast(
+      'a and b implies c or d and not e implies f',
+      '((a and b) implies ((c or (d and (not e))) implies f))'
+    )
   })
 })
