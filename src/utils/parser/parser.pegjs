@@ -1,12 +1,11 @@
-Expression
-  = _ expression:Implies _ {
-  	return expression
+ConjunctionNormalForm
+  = head:Implies operator:AndSpace tail:ConjunctionNormalForm {
+  	return {
+      name: 'and',
+      clauses: [head, tail]
+    }
   }
-
-Subclause
-  = "(" _ clause:Implies _ ")" {
-    return clause
-  }
+  / Implies
 
 Implies
   = head:Or space operator:'implies' space tail:Implies {
@@ -17,18 +16,8 @@ Implies
   }
   / Or
 
-
 Or
-  = head:And space operator:'or' space tail:Or {
-  	return {
-      name: operator,
-      clauses: [head, tail]
-    }
-  }
-  / And
-
-And
-  = head:Not space operator:'and' space tail:And {
+  = head:Not space operator:'or' space tail:Or {
   	return {
       name: operator,
       clauses: [head, tail]
@@ -46,8 +35,13 @@ Not
   / Subclause
   / Variable
 
+Subclause
+  = "(" _ clause:Implies _ ")" {
+    return clause
+  }
+
 Variable
-  = val:[^ \t\n\r,()]+ {
+  = val:[^ \t\n\r,()$-]+ {
   	return {
     	name: 'variable',
         value: val.join('')
@@ -57,4 +51,8 @@ space
   = ' '+
 
 _ "whitespace"
-  = [ \t\n\r]*
+  = [ \t\r]*
+
+
+AndSpace
+  = [\t\r ]*[\n][\n\t\r ]*

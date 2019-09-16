@@ -29,6 +29,14 @@ describe('ast basic', () => {
 })
 
 describe('ast nested', () => {
+
+  test('and/imply', () => {
+    check_ast(
+      'a implies b \n c implies d',
+      '((a implies b) and (c implies d))'
+    )
+  })
+
   test('implies/or', () => {
     check_ast(
       'a or b implies c or d',
@@ -36,39 +44,32 @@ describe('ast nested', () => {
     )
   })
 
-  test('or/and', () => {
+  test('or/not', () => {
     check_ast(
-      'a and b or c and d',
-      '((a and b) or (c and d))'
+      'not a or not b',
+      '((not a) or (not b))'
     )
   })
 
-  test('and/not', () => {
-    check_ast(
-      'not a and not b',
-      '((not a) and (not b))'
-    )
-  })
   test('clause', () => {
     check_ast(
-      '(a and b)',
-      '(a and b)'
+      '(a implies b)',
+      '(a implies b)'
     )
     check_ast(
-      '( a implies b ) and (c implies d)',
-      '((a implies b) and (c implies d))'
+      '( a implies b ) or (c implies d)',
+      '((a implies b) or (c implies d))'
     )
     check_ast(
-      '(a implies (b or e)) and (c implies d)',
-      '((a implies (b or e)) and (c implies d))'
+      '(a implies (b or e)) or (c implies d)',
+      '((a implies (b or e)) or (c implies d))'
     )
   })
-
 
   test('complex', () => {
     check_ast(
-      'a and b implies c or d and not e implies f',
-      '((a and b) implies ((c or (d and (not e))) implies f))'
+      'a \n b implies c or d \n not e implies f',
+      '(a and ((b implies (c or d)) and ((not e) implies f)))'
     )
   })
 })

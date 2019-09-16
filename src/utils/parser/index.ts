@@ -9,7 +9,7 @@ export function Parser(text?: string): pegjs.Parser {
     return parser
   }
 }
-const http = (new Vue()).$http
+const http = (<any>new Vue()).$http
 
 export async function fromUrl(url: string): Promise<pegjs.Parser> {
   const response = await http.get(url)

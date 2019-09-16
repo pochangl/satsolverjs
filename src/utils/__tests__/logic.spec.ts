@@ -9,17 +9,6 @@ function check_tree(input: string, expected: string) {
   expect(result).toEqual(expected)
 }
 
-describe('toLogicTree', () => {
-
-  test('nested', () => {
-    // random nested structure
-    check_tree(
-      'a or b implies not b and c or d',
-      '((not (a or b)) or ((not b) and c) or d)'
-    )
-  })
-})
-
 describe('toLogicTree merging', () => {
   test('pure imply merge', () => {
     check_tree(
@@ -36,7 +25,7 @@ describe('toLogicTree merging', () => {
 
   test('pure \'and\' merge', () => {
     check_tree(
-      'a and b and c',
+      'a \n b \n c',
       '(a and b and c)'
     )
   })
@@ -58,15 +47,15 @@ describe('toLogicTree merging', () => {
   // nested
   test('mixed \'or\' merge', () => {
     check_tree(
-      'not a or b and c or d',
-      '((not a) or (b and c) or d)'
+      'not a or b or ( c or not d)',
+      '((not a) or b or c or (not d))'
     )
   })
 
   test('mixed \'and\' merge', () => {
     check_tree(
-      'a and not b and c',
-      '(a and (not b) and c)'
+      'a \n not b \n c implies d',
+      '(a and (not b) and ((not c) or d))'
     )
   })
 })

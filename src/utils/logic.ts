@@ -2,13 +2,11 @@ import { IAbstractSyntaxTree } from './ast'
 
 declare type ILogicTransformer = (ast: IAbstractSyntaxTree, clauses: Array<Logic>) => Logic
 
-declare type ICNF = Array<Array<Variable | Not>>
-
 interface ILogics {
   [key: string]: ILogicTransformer
 }
 
-abstract class Logic implements IAbstractSyntaxTree {
+export abstract class Logic implements IAbstractSyntaxTree {
   /*
     logic class for handling logic operation
   */
@@ -77,7 +75,7 @@ export class Not extends Logic {
   }
 }
 
-export class Or extends Logic {
+class Or extends Logic {
   name = 'or'
 
   isValid() {
