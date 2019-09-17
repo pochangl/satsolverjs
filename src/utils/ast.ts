@@ -1,4 +1,3 @@
-import { precedence } from './alias'
 import { Parser } from './parser'
 
 export interface IAbstractSyntaxTree {

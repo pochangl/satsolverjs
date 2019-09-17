@@ -1,6 +1,5 @@
 import { ast } from '../ast'
-import { precedence } from '../alias'
-import { stringify } from '../test'
+import { stringify } from '../humanize'
 
 function check_ast(input: string, expected: string) {
   const tree = ast(input)
@@ -44,10 +43,17 @@ describe('ast nested', () => {
     )
   })
 
-  test('or/not', () => {
+  test('or/and', () => {
     check_ast(
-      'not a or not b',
-      '((not a) or (not b))'
+      'a and b or c and d',
+      '((a and b) or (c and d))'
+    )
+  })
+
+  test('and/not', () => {
+    check_ast(
+      'not a and not b',
+      '((not a) and (not b))'
     )
   })
 

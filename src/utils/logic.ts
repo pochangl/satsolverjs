@@ -1,9 +1,17 @@
 import { IAbstractSyntaxTree } from './ast'
+import { stringify } from './humanize'
 
 declare type ILogicTransformer = (ast: IAbstractSyntaxTree, clauses: Array<Logic>) => Logic
 
 interface ILogics {
   [key: string]: ILogicTransformer
+}
+
+export class CNFError extends Error {
+  name: 'CNF error'
+  constructor(tree: Logic) {
+    super('Unable to reduce ' + tree.toString() + ' to conjunction normal form')
+  }
 }
 
 export abstract class Logic implements IAbstractSyntaxTree {
@@ -15,10 +23,12 @@ export abstract class Logic implements IAbstractSyntaxTree {
   public abstract merge(): Logic
 
   // for checking validity
-  public abstract isValid(): boolean
-
+  public abstract isCNF(): boolean
   // for debugging purpose
   public abstract name: string
+
+  // negation
+  public abstract negate(): Logic
 
   clauses: Array<Logic>
   value?: string
@@ -28,24 +38,38 @@ export abstract class Logic implements IAbstractSyntaxTree {
     this.value = value
   }
 
-  runValidation() {
+  public validateCNF(): void {
     // raise error if invalid
-    if (!this.isValid()) {
-      throw new Error('invalid state')
+    if (!this.isCNF()) {
+      throw new CNFError(this)
+    }
+
+    for (const clause of this.clauses) {
+      clause.validateCNF()
     }
   }
-  runMerge(): Logic {
+
+  public runMerge(): Logic {
     // merge logic
     this.clauses = this.clauses.map(clause => clause.merge())
     return this.merge()
+  }
+
+  public simplify(): Logic {
+    /* propagate Not operator to the tree leave */
+    this.clauses = this.clauses.map(clause => clause.simplify())
+    return this
+  }
+  public toString(): string {
+    return stringify(this)
   }
 }
 
 export class Variable extends Logic {
   name = 'variable'
 
-  isValid() {
-    return this.clauses.length === 0 && !!this.value
+  isCNF() {
+    return true
   }
   merge() {
     /*
@@ -54,13 +78,17 @@ export class Variable extends Logic {
     */
     return this
   }
+
+  negate(): Logic {
+    return new Not([this])
+  }
 }
 
 export class Not extends Logic {
   name = 'not'
 
-  isValid() {
-    return this.clauses.length === 1
+  isCNF() {
+    return this.clauses.every(value => value instanceof Variable)
   }
   merge(): Logic {
     /*
@@ -73,13 +101,24 @@ export class Not extends Logic {
     }
     return this
   }
+  negate() {
+    return this.clauses[0]
+  }
+
+  public simplify(): Logic {
+    let clause = this.clauses[0]
+    if (clause instanceof Variable) {
+      return this
+    }
+    return clause.negate().simplify()
+  }
 }
 
 class Or extends Logic {
   name = 'or'
 
-  isValid() {
-    return this.clauses.length >= 2
+  isCNF() {
+    return this.clauses.every(value => value instanceof Variable || value instanceof Not)
   }
   merge(): Logic {
     /*
@@ -98,13 +137,18 @@ class Or extends Logic {
     this.clauses = this.clauses.filter(clause => !(clause instanceof Or))
     return this
   }
+  negate(): Logic {
+    let logic = new And([])
+    logic.clauses = this.clauses.map(clause => clause.negate())
+    return logic
+  }
 }
 
 export class And extends Logic {
   name = 'and'
 
-  isValid() {
-    return this.clauses.length >= 2
+  isCNF() {
+    return this.clauses.every(value => value instanceof Variable || value instanceof Not || value instanceof Or)
   }
   merge(): Logic {
     /*
@@ -122,6 +166,11 @@ export class And extends Logic {
     }
     this.clauses = this.clauses.filter(clause => !(clause instanceof And))
     return this
+  }
+  negate(): Logic {
+    let logic = new Or([])
+    logic.clauses = this.clauses.map(clause => clause.negate())
+    return logic
   }
 }
 
@@ -158,16 +207,11 @@ function logicfy(ast: IAbstractSyntaxTree): Logic {
   )
 }
 
-export function toLogicTree(ast: IAbstractSyntaxTree): Logic {
+export function toCNF(ast: IAbstractSyntaxTree): Logic {
   /*
-    make ast to logic tree and merge its structure
-    merge structure example:
-      example1
-        a and (b and c) => a and b and c
-      example2
-        not not c => c
+    conver abstract syntax tree to cnf logic
   */
-  const tree = logicfy(ast).runMerge()
-  tree.runValidation()
+  const tree = logicfy(ast).runMerge().simplify().runMerge()
+  tree.validateCNF()
   return tree
 }

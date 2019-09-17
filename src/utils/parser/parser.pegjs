@@ -17,7 +17,16 @@ Implies
   / Or
 
 Or
-  = head:Not space operator:'or' space tail:Or {
+  = head:And space operator:'or' space tail:Or {
+  	return {
+      name: operator,
+      clauses: [head, tail]
+    }
+  }
+  / And
+
+And
+  = head:Not space operator:'and' space tail:And {
   	return {
       name: operator,
       clauses: [head, tail]
