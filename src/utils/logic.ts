@@ -1,14 +1,14 @@
 import { IAbstractSyntaxTree } from './ast'
 import { stringify } from './humanize'
 
-declare type ILogicTransformer = (ast: IAbstractSyntaxTree, clauses: Array<Logic>) => Logic
+declare type ILogicTransformer = (ast: IAbstractSyntaxTree, clauses: Logic[]) => Logic
 
 interface ILogics {
   [key: string]: ILogicTransformer
 }
 
 export class CNFError extends Error {
-  name: 'CNF error'
+  public name: 'CNF error'
   constructor(tree: Logic) {
     super('Unable to reduce ' + tree.toString() + ' to conjunction normal form')
   }
@@ -30,10 +30,10 @@ export abstract class Logic implements IAbstractSyntaxTree {
   // negation
   public abstract negate(): Logic
 
-  clauses: Array<Logic>
-  value?: string
+  public clauses: Logic[]
+  public value?: string
 
-  constructor(clauses: Array<Logic>, value?: string) {
+  constructor(clauses: Logic[], value?: string) {
     this.clauses = clauses
     this.value = value
   }
@@ -66,12 +66,12 @@ export abstract class Logic implements IAbstractSyntaxTree {
 }
 
 export class Variable extends Logic {
-  name = 'variable'
+  public name = 'variable'
 
-  isCNF() {
+  public isCNF() {
     return true
   }
-  merge() {
+  public merge() {
     /*
       atomic is the most basic element
       nothing to merge
@@ -79,18 +79,18 @@ export class Variable extends Logic {
     return this
   }
 
-  negate(): Logic {
+  public negate(): Logic {
     return new Not([this])
   }
 }
 
 export class Not extends Logic {
-  name = 'not'
+  public name = 'not'
 
-  isCNF() {
+  public isCNF() {
     return this.clauses.every(value => value instanceof Variable)
   }
-  merge(): Logic {
+  public merge(): Logic {
     /*
       merge not logic
       for example:
@@ -101,12 +101,12 @@ export class Not extends Logic {
     }
     return this
   }
-  negate() {
+  public negate() {
     return this.clauses[0]
   }
 
   public simplify(): Logic {
-    let clause = this.clauses[0]
+    const clause = this.clauses[0]
     if (clause instanceof Variable) {
       return this
     }
@@ -115,12 +115,12 @@ export class Not extends Logic {
 }
 
 class Or extends Logic {
-  name = 'or'
+  public name = 'or'
 
-  isCNF() {
+  public isCNF() {
     return this.clauses.every(value => value instanceof Variable || value instanceof Not)
   }
-  merge(): Logic {
+  public merge(): Logic {
     /*
       merge or logic
       for example:
@@ -137,20 +137,20 @@ class Or extends Logic {
     this.clauses = this.clauses.filter(clause => !(clause instanceof Or))
     return this
   }
-  negate(): Logic {
-    let logic = new And([])
+  public negate(): Logic {
+    const logic = new And([])
     logic.clauses = this.clauses.map(clause => clause.negate())
     return logic
   }
 }
 
 export class And extends Logic {
-  name = 'and'
+  public name = 'and'
 
-  isCNF() {
+  public isCNF() {
     return this.clauses.every(value => value instanceof Variable || value instanceof Not || value instanceof Or)
   }
-  merge(): Logic {
+  public merge(): Logic {
     /*
       merge and logic
       for example:
@@ -167,8 +167,8 @@ export class And extends Logic {
     this.clauses = this.clauses.filter(clause => !(clause instanceof And))
     return this
   }
-  negate(): Logic {
-    let logic = new Or([])
+  public negate(): Logic {
+    const logic = new Or([])
     logic.clauses = this.clauses.map(clause => clause.negate())
     return logic
   }

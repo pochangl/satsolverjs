@@ -24,6 +24,8 @@
       true,
       "single"
     ],
-    "no-unexpected-multiline": true
+    "no-unexpected-multiline": true,
+    "max-classes-per-file": false,
+    "member-ordering": false
   }
 }
