@@ -54,8 +54,8 @@ describe('toLogicTree merging', () => {
 
   test('mixed \'and\' merge', () => {
     check_tree(
-      'a \n not b \n c implies d',
-      '(a and (not b) and ((not c) or d))'
+      'a \n not b \n d or e \n f implies g',
+      '(a and (not b) and (d or e) and ((not f) or g))'
     )
   })
 })
