@@ -63,6 +63,33 @@ describe('toLogicTree merging', () => {
       )
     })
   })
+  describe('logic chain', () => {
+
+    test('case3', () => {
+      check_tree(
+        'not a \n b \n a implies b \n b implies c \n c implies d',
+        '((not a) and b and ((not a) or b) and ((not b) or c) and ((not c) or d))'
+      )
+    })
+    test('case4', () => {
+      check_tree(
+        'a or b or c or d or e or f or g',
+        '(a or b or c or d or e or f or g)'
+      )
+    })
+    test('case5', () => {
+      check_tree(
+        'not not not not not not not a',
+        '(not a)'
+      )
+    })
+    test('case6', () => {
+      check_tree(
+        'a \n b \n c \n d \n a or b or c or d or not not not not a',
+        '(a and b and c and d and (a or b or c or d or a))'
+      )
+    })
+  })
 
   describe('not Conjunction Normal Form', () => {
     test('mixed \'and\' merge', () => {

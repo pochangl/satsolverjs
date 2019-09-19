@@ -7,6 +7,14 @@ interface ILogics {
   [key: string]: ILogicTransformer
 }
 
+function expand(logic: Logic, type: new (c: Logic[]) => Logic): Logic[] {
+  if (logic instanceof type) {
+    return ([] as Logic[]).concat(...logic.clauses.map(clause => expand(clause, type)))
+  } else {
+    return [logic]
+  }
+}
+
 export class CNFError extends Error {
   public name: 'CNF error'
   constructor(tree: Logic) {
@@ -114,7 +122,7 @@ export class Not extends Logic {
   }
 }
 
-class Or extends Logic {
+export class Or extends Logic {
   public name = 'or'
 
   public isCNF() {
@@ -126,15 +134,8 @@ class Or extends Logic {
       for example:
         a or (b or c) => (a or b or c)
     */
-    for (const clause of this.clauses) {
-      if (clause instanceof Or) {
-        this.clauses = [
-          ...this.clauses,
-          ...clause.clauses
-        ]
-      }
-    }
-    this.clauses = this.clauses.filter(clause => !(clause instanceof Or))
+    this.clauses = expand(this, Or)
+    // this.clauses = this.clauses.filter(clause => !(clause instanceof Or))
     return this
   }
   public negate(): Logic {
@@ -156,15 +157,8 @@ export class And extends Logic {
       for example:
         a and (b and c) => (a and b and c)
     */
-    for (const clause of this.clauses) {
-      if (clause instanceof And) {
-        this.clauses = [
-          ...this.clauses,
-          ...clause.clauses
-        ]
-      }
-    }
-    this.clauses = this.clauses.filter(clause => !(clause instanceof And))
+    this.clauses = expand(this, And)
+    // this.clauses = this.clauses.filter(clause => !(clause instanceof And))
     return this
   }
   public negate(): Logic {
