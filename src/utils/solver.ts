@@ -1,15 +1,22 @@
 import * as LogicSolver from 'logic-solver'
-import { And, Not, Variable } from './logic'
+import { And, Not, Or, Variable } from './logic'
 
-function toArray(logic: And): string[][] {
+function toOrArray(logic: Or): string[] {
+  return logic.clauses.map(atomic => {
+    if (atomic instanceof Not) {
+      return '-' + atomic.clauses[0].value
+    } else {
+      return atomic.value as string
+    }
+  })
+}
+
+function toAndArray(logic: And): string[][] {
   return logic.clauses.map(clause => {
-    return clause.clauses.map(atomic => {
-      if (atomic instanceof Not) {
-        return '-' + atomic.clauses[0].value
-      } else {
-        return atomic.value as string
-      }
-    })
+    if (!(clause instanceof Or)) {
+      clause = new Or([clause])
+    }
+    return toOrArray(clause)
   })
 }
 
@@ -30,7 +37,7 @@ function toFact(fact: string[]): And {
 
 export function* solve(logic: And): IterableIterator<And> {
   logic.validateCNF()
-  const cnf = toArray(logic)
+  const cnf = toAndArray(logic)
   const solver = new LogicSolver.Solver()
 
   for (let names of cnf) {
