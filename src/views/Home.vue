@@ -1,9 +1,9 @@
 <template lang="pug">
   v-container
     v-layout.sat-solver(row)
-      v-flex.px-3
+      v-flex.px-3(xs6)
         v-textarea(v-model="text" outlined label="命題邏輯")
-      v-flex.px-3
+      v-flex.px-3(xs6)
         v-textarea(v-model="answers" outlined label="滿足解")
         p count: {{ count }}
         p keys: {{ keys }}
