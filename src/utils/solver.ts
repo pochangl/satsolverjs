@@ -21,10 +21,10 @@ function toAndArray(logic: And): string[][] {
 }
 
 function toFact(fact: string[]): And {
-  let and = new And([])
+  const and = new And([])
 
   and.clauses = fact.map(name => {
-    if (name[0] == '-') {
+    if (name[0] === '-') {
       return new Not([
         new Variable([], name.slice(1))
       ])
@@ -40,12 +40,13 @@ export function* solve(logic: And): IterableIterator<And> {
   const cnf = toAndArray(logic)
   const solver = new LogicSolver.Solver()
 
-  for (let names of cnf) {
+  for (const names of cnf) {
     solver.require(LogicSolver.or(names))
   }
-  let solution: LogicSolver.Solution
-  while (solution = solver.solve()) {
+  let solution: LogicSolver.Solution = solver.solve()
+  while (solution) {
     yield toFact(solution.getTrueVars())
     solver.forbid(solution.getFormula())
+    solution = solver.solve()
   }
 }
