@@ -20,7 +20,7 @@ function toAndArray(logic: And): string[][] {
   })
 }
 
-function toFact(fact: string[]): And {
+export function toFact(fact: string[]): And {
   const and = new And([])
 
   and.clauses = fact.map(name => {
@@ -35,7 +35,7 @@ function toFact(fact: string[]): And {
   return and
 }
 
-export function* solve(logic: And): IterableIterator<And> {
+export function* solve(logic: And): IterableIterator<LogicSolver.Solution> {
   logic.validateCNF()
   const cnf = toAndArray(logic)
   const solver = new LogicSolver.Solver()
@@ -45,7 +45,7 @@ export function* solve(logic: And): IterableIterator<And> {
   }
   let solution: LogicSolver.Solution = solver.solve()
   while (solution) {
-    yield toFact(solution.getTrueVars())
+    yield solution
     solver.forbid(solution.getFormula())
     solution = solver.solve()
   }

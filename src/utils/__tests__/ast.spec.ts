@@ -27,6 +27,13 @@ describe('ast basic', () => {
   })
 })
 
+describe('weird', () => {
+  check_ast(
+    'a implies b\n\n',
+    '(a implies b)'
+  )
+})
+
 describe('ast nested', () => {
 
   test('and/imply', () => {

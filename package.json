@@ -10,19 +10,24 @@
     "parser": "pegjs -o src/utils/parser/parser.js src/utils/parser/parser.pegjs"
   },
   "dependencies": {
+    "@babel/polyfill": "^7.6.0",
     "@types/pegjs": "^0.10.1",
     "core-js": "^2.6.5",
     "logic-solver": "^2.0.1",
     "pegjs": "^0.10.0",
     "register-service-worker": "^1.6.2",
+    "rxjs": "^6.5.3",
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.2",
     "vue-property-decorator": "^8.1.0",
     "vue-resource": "^1.5.1",
     "vue-router": "^3.0.3",
-    "vuetify": "^2.0.11"
+    "vuetify": "^2.0.18"
   },
   "devDependencies": {
+    "@babel/cli": "^7.6.0",
+    "@babel/core": "^7.6.0",
+    "@babel/preset-env": "^7.6.0",
     "@types/jest": "^23.1.4",
     "@types/vue-resource": "^0.9.34",
     "@vue/cli-plugin-babel": "^3.11.0",
@@ -35,7 +40,9 @@
     "pug": "^2.0.4",
     "pug-loader": "^2.4.0",
     "pug-plain-loader": "^1.0.0",
-    "stylus": "^0.54.5",
+    "sass": "^1.22.12",
+    "sass-loader": "^8.0.0",
+    "stylus": "^0.54.7",
     "stylus-loader": "^3.0.2",
     "ts-jest": "^23.0.0",
     "tslint-config-prettier": "^1.18.0",

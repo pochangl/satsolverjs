@@ -1,12 +1,13 @@
 import { ast } from '../ast'
 import { toCNF } from '../logic'
-import { solve } from '../solver'
+import { solve, toFact } from '../solver'
 
 function check_solver(input: string, expected: string[]) {
   input = input.replace(/,/g, '\n')
   const treeAst = ast(input)
   const logicTree = toCNF(treeAst)
-  const result = Array.from(solve(logicTree)).map(clause => clause.toString())
+  const solutions = Array.from(solve(logicTree))
+  const result = solutions.map(solution => toFact(solution.getTrueVars())).map(clause => clause.toString())
 
   expect(result.sort()).toEqual(expected.sort())
 }

@@ -17,5 +17,5 @@ export function ast(str: string): IAbstractSyntaxTree {
   /*
     convert string to ast tree
   */
-  return fill_clauses(parser.parse(str))
+  return fill_clauses(parser.parse(str.trim()))
 }

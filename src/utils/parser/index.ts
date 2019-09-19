@@ -1,12 +1,12 @@
 import Vue from 'vue'
 import pegjs from 'pegjs'
-import parser from './parser'
+import * as parser from './parser'
 
 export function Parser(text?: string): pegjs.Parser {
   if (text) {
     return pegjs.generate(text)
   } else {
-    return parser
+    return parser as any
   }
 }
 const http = (new Vue() as any).$http
