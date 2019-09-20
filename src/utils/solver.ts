@@ -1,5 +1,5 @@
 import * as LogicSolver from 'logic-solver'
-import { And, Not, Or, Variable } from './logic'
+import { And, Not, Or, Variable, Logic } from './logic'
 
 function toOrArray(logic: Or): string[] {
   return logic.clauses.map(atomic => {
@@ -11,10 +11,13 @@ function toOrArray(logic: Or): string[] {
   })
 }
 
-function toAndArray(logic: And): string[][] {
+function toAndArray(logic: Logic): string[][] {
   if (logic instanceof Variable) {
     return [[logic.value as string]]
+  } else if (logic instanceof Or) {
+    return [toOrArray(logic)]
   }
+
   return logic.clauses.map(clause => {
     if (!(clause instanceof Or)) {
       clause = new Or([clause])
@@ -38,7 +41,7 @@ export function toFact(fact: string[]): And {
   return and
 }
 
-export function* solve(logic: And): IterableIterator<LogicSolver.Solution> {
+export function* solve(logic: Logic): IterableIterator<LogicSolver.Solution> {
   logic.validateCNF()
   const cnf = toAndArray(logic)
   const solver = new LogicSolver.Solver()
