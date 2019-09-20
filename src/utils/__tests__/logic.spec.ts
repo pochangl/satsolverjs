@@ -109,4 +109,25 @@ describe('toLogicTree merging', () => {
       non_cnf_tree('a or b implies c')
     })
   })
+
+  describe('existential', () => {
+    test('at least', () => {
+      check_tree(
+        'at least 1 of {a, b, c}',
+        '(a or b or c)'
+      )
+    })
+    test('at most', () => {
+      check_tree(
+        'at most 1 of {a, b, c}',
+        '(((not a) or (not b)) and ((not a) or (not c)) and ((not b) or (not c)))'
+      )
+    })
+    test('only 1 of', () => {
+      check_tree(
+        'only 1 of {a, b, c}',
+        '((a or b or c) and ((not a) or (not b)) and ((not a) or (not c)) and ((not b) or (not c)))'
+      )
+    })
+  })
 })

@@ -1,5 +1,6 @@
 import { IAbstractSyntaxTree } from './ast'
 import { stringify } from './humanize'
+import { combinations } from './itertools'
 
 declare type ILogicTransformer = (ast: IAbstractSyntaxTree, clauses: Logic[]) => Logic
 
@@ -40,6 +41,7 @@ export abstract class Logic implements IAbstractSyntaxTree {
 
   public clauses: Logic[]
   public value?: string
+  public abstract type: string
 
   constructor(clauses: Logic[], value?: string) {
     this.clauses = clauses
@@ -75,6 +77,7 @@ export abstract class Logic implements IAbstractSyntaxTree {
 
 export class Variable extends Logic {
   public name = 'variable'
+  public type = 'atomic'
 
   public isCNF() {
     return true
@@ -94,6 +97,7 @@ export class Variable extends Logic {
 
 export class Not extends Logic {
   public name = 'not'
+  public type = 'prefix'
 
   public isCNF() {
     return this.clauses.every(value => value instanceof Variable)
@@ -124,6 +128,7 @@ export class Not extends Logic {
 
 export class Or extends Logic {
   public name = 'or'
+  public type = 'junction'
 
   public isCNF() {
     return this.clauses.every(value => value instanceof Variable || value instanceof Not)
@@ -147,6 +152,7 @@ export class Or extends Logic {
 
 export class And extends Logic {
   public name = 'and'
+  public type = 'junction'
 
   public isCNF() {
     return this.clauses.every(value => value instanceof Variable || value instanceof Not || value instanceof Or)
@@ -187,6 +193,24 @@ const logics: ILogics = {
   },
   or(ast, clauses) {
     return new Or(clauses)
+  },
+  'at least': function (ast, clauses) {
+    return new Or(clauses)
+  },
+  'at most': function (ast, clauses) {
+    return new And(
+      [...combinations(clauses, clauses.length - 1)].map(subclauses => {
+        return new Not([new And(subclauses)])
+      })
+    )
+  },
+  'one': function (ast, clauses) {
+    const atleast = logics['at least'](ast, clauses)
+    const atmost = logics['at most'](ast, clauses)
+    return new And([
+      atleast,
+      ...atmost.clauses,
+    ])
   }
 }
 
