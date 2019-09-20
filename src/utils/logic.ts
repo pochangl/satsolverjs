@@ -194,17 +194,17 @@ const logics: ILogics = {
   or(ast, clauses) {
     return new Or(clauses)
   },
-  'at least': function (ast, clauses) {
+  'at least': (ast, clauses) => {
     return new Or(clauses)
   },
-  'at most': function (ast, clauses) {
+  'at most': (ast, clauses) => {
     return new And(
       [...combinations(clauses, clauses.length - 1)].map(subclauses => {
         return new Not([new And(subclauses)])
       })
     )
   },
-  'one': function (ast, clauses) {
+  'one': (ast, clauses) => {
     const atleast = logics['at least'](ast, clauses)
     const atmost = logics['at most'](ast, clauses)
     return new And([

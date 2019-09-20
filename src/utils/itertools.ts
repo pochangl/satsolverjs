@@ -1,4 +1,4 @@
-export function* combinations<T>(array: T[], r: number): IterableIterator<Array<T>> {
+export function* combinations<T>(array: T[], r: number): IterableIterator<T[]> {
   if (array.length < r || r <= 0) {
     return
   } else if (r === 1) {
