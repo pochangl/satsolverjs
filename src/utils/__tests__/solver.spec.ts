@@ -87,6 +87,19 @@ describe('solver', () => {
       )
     })
 
+    test('at most 1 of {a, b, c, d}', () => {
+      check_solver_existential(
+        'at most 1 of {a, b, c, d}',
+        [
+          '()',
+          '(a)',
+          '(b)',
+          '(c)',
+          '(d)',
+        ]
+      )
+    })
+
     test('only 1 of {a, b, c}', () => {
       check_solver_existential(
         'only 1 of {a, b, c}',

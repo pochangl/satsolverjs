@@ -199,7 +199,7 @@ const logics: ILogics = {
   },
   'at most': (ast, clauses) => {
     return new And(
-      [...combinations(clauses, clauses.length - 1)].map(subclauses => {
+      [...combinations(clauses, 2)].map(subclauses => {
         return new Not([new And(subclauses)])
       })
     )

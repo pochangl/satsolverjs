@@ -123,6 +123,14 @@ describe('toLogicTree merging', () => {
         '(((not a) or (not b)) and ((not a) or (not c)) and ((not b) or (not c)))'
       )
     })
+
+    test('at most out of 4', () => {
+      check_tree(
+        'at most 1 of {a, b, c, d}',
+        '(((not a) or (not b)) and ((not a) or (not c)) and ((not a) or (not d)) and ((not b) or (not c)) and ((not b) or (not d)) and ((not c) or (not d)))'
+      )
+    })
+
     test('only 1 of', () => {
       check_tree(
         'only 1 of {a, b, c}',
