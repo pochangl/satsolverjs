@@ -2,7 +2,7 @@
   v-container
     v-row.sat-solver
       v-col(:cols="6")
-        v-textarea(v-model="text" outlined label="命題邏輯")
+        v-textarea(v-model="text" label="命題邏輯" outlined counter)
         p.error--text {{ error }}
       v-col(:cols="6")
         p 共 {{ count }} 解, {{ variables.length }} 個變數
@@ -106,7 +106,7 @@ export default class Home extends Vue {
       const result = solutions
         .map(solution => solution.getTrueVars())
         .map(vars => vars.join(', '))
-      this.answers = result
+      this.answers = result.sort()
       this.count = result.length
       if (solutions.length) {
         this.variables = Object.keys(solutions[0].getMap())
@@ -121,7 +121,7 @@ export default class Home extends Vue {
 <style lang="stylus">
 .sat-solver
   textarea
-    height: 50vh
+    height: 80vh
     font-size: 24px
     line-height: 36px!important
   .flex
