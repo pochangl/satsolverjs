@@ -3,13 +3,23 @@
     v-row.sat-solver
       v-col(:cols="6")
         v-textarea(v-model="text" outlined label="命題邏輯")
+        p.error--text {{ error }}
       v-col(:cols="6")
-        p 共 {{ count }} 解, {{ keys.length }} 個變數
-        p 變數: {{ keys.join(', ') }}
+        p 共 {{ count }} 解, {{ variables.length }} 個變數
+        v-layout.py-2(row justify-start align-center)
+          v-flex.flex-grow-0(wrap) 變數:
+          v-btn.mx-2.elevation-1(
+            v-for="variable in variables"
+            :key="variable"
+            v-bind="getAttrs(variable)"
+            @click="toggle(variable)"
+          ) {{ variable }}
         v-list
           v-subheader 滿足解
-          v-list-itemgroup
-            v-list-item(:key="answer" v-for="(answer, index) in answers") 解{{index + 1}}: {{ answer}}
+          v-list-item-group
+            v-list-item(:key="answer" v-for="(answer, index) in answers")
+              span.mr-3 可能性{{index + 1}}:
+              span {{ answer}}
 </template>
 
 <script lang="ts">
@@ -29,9 +39,30 @@ export default class Home extends Vue {
   text: string = window.localStorage.text || ''
   answers: string[] = []
   count: number = 0
-  keys: string[] = []
+  variables: string[] = []
   error: string = ''
   facts: Set<string> = new Set([])
+  fakes: Set<string> = new Set([])
+
+  getAttrs(variable: string) {
+    if (this.facts.has(variable)) {
+      return {
+        color: 'blue lighten-2',
+        text: false,
+        dark: true
+      }
+    } else if (this.fakes.has(variable)) {
+      return {
+        color: 'red lighten-2',
+        text: false,
+        dark: true
+      }
+    } else {
+      return {
+        text: true
+      }
+    }
+  }
 
   created() {
     this.subject.pipe(debounce(() => interval(1000))).subscribe(() => {
@@ -40,12 +71,26 @@ export default class Home extends Vue {
     this.update()
   }
   toggle(variable: string) {
-    if (this.facts.has(variable)) {
+    const clear = () => {
       this.facts.delete(variable)
+      this.fakes.delete(variable)
+      this.facts = new Set(Array.from(this.facts))
+      this.fakes = new Set(Array.from(this.fakes))
+    }
+
+    if (this.facts.has(variable)) {
+      // was fact
+      clear()
+      this.fakes.add(variable)
+    } else if (this.fakes.has(variable)) {
+      // was fake
+      clear()
     } else {
+      // no bias
+      clear()
       this.facts.add(variable)
     }
-    this.facts = new Set(Array.from(this.facts))
+    this.flush()
   }
 
   @Watch('text')
@@ -55,16 +100,16 @@ export default class Home extends Vue {
   flush() {
     window.localStorage.text = this.text
     try {
-      const cnf = toCNF(ast(this.text))
+      const text = this.text + '\n' + Array.from(this.facts).join('\n')
+      const cnf = toCNF(ast(text))
       const solutions = Array.from(solve(cnf))
       const result = solutions
         .map(solution => solution.getTrueVars())
-        .map(toFact)
-        .map(clause => clause.toString())
+        .map(vars => vars.join(', '))
       this.answers = result
       this.count = result.length
       if (solutions.length) {
-        this.keys = Object.keys(solutions[0].getMap())
+        this.variables = Object.keys(solutions[0].getMap())
       }
       this.error = ''
     } catch (err) {
