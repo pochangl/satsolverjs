@@ -13,6 +13,12 @@ function check_solver(input: string, expected: string[]) {
 }
 
 describe('solver', () => {
+  test('pure a', () => {
+    check_solver(
+      'a',
+      ['(a)']
+    )
+  })
   test('a, a implies b', () => {
     check_solver(
       'a, a implies b',

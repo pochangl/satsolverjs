@@ -46,6 +46,12 @@ describe('toLogicTree merging', () => {
         'a'
       )
     })
+    test('a', () => {
+      check_tree(
+        'a',
+        'a'
+      )
+    })
   })
 
   describe('simplify', () => {

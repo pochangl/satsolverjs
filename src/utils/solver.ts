@@ -12,6 +12,9 @@ function toOrArray(logic: Or): string[] {
 }
 
 function toAndArray(logic: And): string[][] {
+  if (logic instanceof Variable) {
+    return [[logic.value as string]]
+  }
   return logic.clauses.map(clause => {
     if (!(clause instanceof Or)) {
       clause = new Or([clause])
