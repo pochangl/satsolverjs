@@ -2,6 +2,7 @@ import { Parser } from './parser'
 
 export interface IAbstractSyntaxTree {
   name: string
+  type: string
   value?: string
   clauses: IAbstractSyntaxTree[]
 }

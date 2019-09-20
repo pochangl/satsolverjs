@@ -14,17 +14,6 @@ describe('ast basic', () => {
       '(a implies b)'
     )
   })
-  it('should handles 1 clauses', () => {
-    // prefix
-    check_ast(
-      'not a',
-      '(not a)'
-    )
-  })
-
-  it('should handles atomic', () => {
-    check_ast('b', 'b')
-  })
 })
 
 describe('weird', () => {
@@ -83,6 +72,39 @@ describe('ast nested', () => {
     check_ast(
       'a \n b implies c or d \n not e implies f',
       '(a and ((b implies (c or d)) and ((not e) implies f)))'
+    )
+  })
+})
+
+describe('Atomic', () => {
+  it('should handles 1 clauses', () => {
+    // prefix
+    check_ast(
+      'not a',
+      '(not a)'
+    )
+  })
+
+  it('should handles atomic', () => {
+    check_ast('b', 'b')
+  })
+
+  test('at least', () => {
+    check_ast(
+      'at least 1 of {a, b, c}',
+      '(at least a b c)'
+    )
+  })
+  test('at most', () => {
+    check_ast(
+      'at most 1 of {a, b, c}',
+      '(at most a b c)'
+    )
+  })
+  test('only 1 of', () => {
+    check_ast(
+      'only 1 of {a, b, c}',
+      '(one a b c)'
     )
   })
 })
