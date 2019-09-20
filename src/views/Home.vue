@@ -1,12 +1,15 @@
 <template lang="pug">
   v-container
-    v-layout.sat-solver(row)
-      v-flex.px-3(xs6)
+    v-row.sat-solver
+      v-col(:cols="6")
         v-textarea(v-model="text" outlined label="命題邏輯")
-      v-flex.px-3(xs6)
-        v-textarea(v-model="answers" outlined label="滿足解")
-        p count: {{ count }}
-        p keys: {{ keys }}
+      v-col(:cols="6")
+        p 共 {{ count }} 解, {{ keys.length }} 個變數
+        p 變數: {{ keys.join(', ') }}
+        v-list
+          v-subheader 滿足解
+          v-list-itemgroup
+            v-list-item(:key="answer" v-for="(answer, index) in answers") 解{{index + 1}}: {{ answer}}
 </template>
 
 <script lang="ts">
@@ -21,42 +24,51 @@ import { ast } from '@/utils/ast'
 
 @Component({})
 export default class Home extends Vue {
-  protected subject = new Subject<void>()
+  subject = new Subject<void>()
 
-  protected text: string = window.localStorage.text || ''
-  protected answers: string = ''
-  protected count: number = 0
-  protected keys: string[] = []
+  text: string = window.localStorage.text || ''
+  answers: string[] = []
+  count: number = 0
+  keys: string[] = []
+  error: string = ''
+  facts: Set<string> = new Set([])
 
-  public created() {
+  created() {
     this.subject.pipe(debounce(() => interval(1000))).subscribe(() => {
       this.flush()
     })
     this.update()
   }
+  toggle(variable: string) {
+    if (this.facts.has(variable)) {
+      this.facts.delete(variable)
+    } else {
+      this.facts.add(variable)
+    }
+    this.facts = new Set(Array.from(this.facts))
+  }
 
   @Watch('text')
-  protected update() {
+  update() {
     this.subject.next()
   }
-  protected flush() {
+  flush() {
     window.localStorage.text = this.text
     try {
-      const tree = ast(this.text)
-      const cnf = toCNF(tree)
+      const cnf = toCNF(ast(this.text))
       const solutions = Array.from(solve(cnf))
       const result = solutions
         .map(solution => solution.getTrueVars())
         .map(toFact)
         .map(clause => clause.toString())
-      this.answers = result.join('\n\n')
+      this.answers = result
       this.count = result.length
       if (solutions.length) {
         this.keys = Object.keys(solutions[0].getMap())
       }
+      this.error = ''
     } catch (err) {
-      console.log(err)
-      // nothing here
+      this.error = err.toString()
     }
   }
 }
@@ -64,7 +76,9 @@ export default class Home extends Vue {
 <style lang="stylus">
 .sat-solver
   textarea
-    height: 80vh
+    height: 50vh
     font-size: 24px
     line-height: 36px!important
+  .flex
+    padding: 10px
 </style>
