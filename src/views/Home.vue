@@ -1,8 +1,8 @@
 <template lang="pug">
-  sat-solver(:text="text")
+  sat-solver(:initial="text")
 </template>
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator'
+import { Component, Vue } from 'vue-property-decorator'
 import SatSolver from '@/components/SatSolver.vue'
 
 @Component({

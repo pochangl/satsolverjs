@@ -5,7 +5,7 @@
         v-textarea(v-model="text" label="命題邏輯" outlined counter)
         p.error--text {{ error }}
       v-col(:cols="6")
-        p 共 {{ count }} 解, {{ variables.length }} 個變數
+        p 共 {{ answers.length }} 解, {{ variables.length }} 個變數
         v-layout.py-2(row justify-start align-center)
           v-flex.flex-grow-0(wrap) 變數:
           v-btn.mx-2.elevation-1(
@@ -35,11 +35,17 @@ import { ast } from '@/utils/ast'
 @Component({})
 export default class Home extends Vue {
   @Prop({ type: String, required: true })
-  text: string
+  initial: string
 
+  @Watch('initial', { immediate: true })
+  onInitial (to: string) {
+    this.text = to
+    this.flush()
+  }
+
+  text: string = ''
   subject = new Subject<void>()
   answers: string[] = []
-  count: number = 0
   variables: string[] = []
   error: string = ''
   facts: Set<string> = new Set([])
@@ -108,12 +114,12 @@ export default class Home extends Vue {
         .map(solution => solution.getTrueVars())
         .map(vars => vars.join(', '))
       this.answers = result.sort()
-      this.count = result.length
       if (solutions.length) {
         this.variables = Object.keys(solutions[0].getMap())
       }
       this.error = ''
     } catch (err) {
+      this.answer = []
       this.error = err.toString()
     }
   }
