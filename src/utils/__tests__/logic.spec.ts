@@ -22,34 +22,34 @@ describe('toLogicTree merging', () => {
     test('imply', () => {
       check_tree(
         'a implies b implies c',
-        '((not a) or (not b) or c)'
+        '(((not a) or (not b) or c))'
       )
     })
 
     test('or', () => {
       check_tree(
         'a or b or c',
-        '(a or b or c)'
+        '((a or b or c))'
       )
     })
 
     test('and', () => {
       check_tree(
         'a \n b and c',
-        '(a and b and c)'
+        '((a) and (b) and (c))'
       )
     })
 
     test('not', () => {
       check_tree(
         'not not a',
-        'a'
+        '((a))'
       )
     })
     test('a', () => {
       check_tree(
         'a',
-        'a'
+        '((a))'
       )
     })
   })
@@ -59,7 +59,7 @@ describe('toLogicTree merging', () => {
     test('case1', () => {
       check_tree(
         'not a or b or ( c or not d)',
-        '((not a) or b or c or (not d))'
+        '(((not a) or b or c or (not d)))'
       )
     })
     test('case2', () => {
@@ -74,25 +74,25 @@ describe('toLogicTree merging', () => {
     test('case3', () => {
       check_tree(
         'not a \n b \n a implies b \n b implies c \n c implies d',
-        '((not a) and b and ((not a) or b) and ((not b) or c) and ((not c) or d))'
+        '(((not a)) and (b) and ((not a) or b) and ((not b) or c) and ((not c) or d))'
       )
     })
     test('case4', () => {
       check_tree(
         'a or b or c or d or e or f or g',
-        '(a or b or c or d or e or f or g)'
+        '((a or b or c or d or e or f or g))'
       )
     })
     test('case5', () => {
       check_tree(
         'not not not not not not not a',
-        '(not a)'
+        '(((not a)))'
       )
     })
     test('case6', () => {
       check_tree(
         'a \n b \n c \n d \n a or b or c or d or not not not not a',
-        '(a and b and c and d and (a or b or c or d or a))'
+        '((a) and (b) and (c) and (d) and (a or b or c or d or a))'
       )
     })
   })
@@ -114,7 +114,7 @@ describe('toLogicTree merging', () => {
     test('at least', () => {
       check_tree(
         'at least 1 of {a, b, c}',
-        '(a or b or c)'
+        '((a or b or c))'
       )
     })
     test('at most', () => {

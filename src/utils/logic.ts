@@ -4,6 +4,8 @@ import { combinations } from './itertools'
 
 declare type ILogicTransformer = (ast: IAbstractSyntaxTree, clauses: Logic[]) => Logic
 
+type ICnf = And & { clauses: Or[] }
+
 interface ILogics {
   [key: string]: ILogicTransformer
 }
@@ -225,11 +227,17 @@ function logicfy(ast: IAbstractSyntaxTree): Logic {
   )
 }
 
-export function toCNF(ast: IAbstractSyntaxTree): Logic {
+export function toCNF(ast: IAbstractSyntaxTree): ICnf {
   /*
     conver abstract syntax tree to cnf logic
   */
-  const tree = logicfy(ast).runMerge().simplify().runMerge()
+  let tree = logicfy(ast).runMerge().simplify().runMerge()
+
+  // convert first layer to and
+  tree = tree instanceof And ? tree : new And([tree])
+
+  // convert second layer to or
+  tree.clauses = tree.clauses.map(clause => clause instanceof Or ? clause : new Or([clause]))
   tree.validateCNF()
-  return tree
+  return tree.runMerge()
 }

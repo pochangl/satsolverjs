@@ -11,19 +11,8 @@ function toOrArray(logic: Or): string[] {
   })
 }
 
-function toAndArray(logic: Logic): string[][] {
-  if (logic instanceof Variable) {
-    return [[logic.value as string]]
-  } else if (logic instanceof Or) {
-    return [toOrArray(logic)]
-  }
-
-  return logic.clauses.map(clause => {
-    if (!(clause instanceof Or)) {
-      clause = new Or([clause])
-    }
-    return toOrArray(clause)
-  })
+function toAndArray(logic: And): string[][] {
+  return logic.clauses.map(toOrArray)
 }
 
 export function toFact(fact: string[]): And {
@@ -41,7 +30,7 @@ export function toFact(fact: string[]): And {
   return and
 }
 
-export function* solve(logic: Logic): IterableIterator<LogicSolver.Solution> {
+export function* solve(logic: And): IterableIterator<LogicSolver.Solution> {
   logic.validateCNF()
   const cnf = toAndArray(logic)
   const solver = new LogicSolver.Solver()
