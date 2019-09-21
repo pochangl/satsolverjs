@@ -11,6 +11,6 @@ import SatSolver from '@/components/SatSolver.vue'
   }
 } as any)
 export default class Home extends Vue {
-  text: string = window.localStorage.text || ''
+  text: string = 'a implies b'
 }
 </script>
