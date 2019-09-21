@@ -19,7 +19,8 @@
           v-list-item-group
             v-list-item(:key="answer" v-for="(answer, index) in answers")
               span.mr-3 可能性{{index + 1}}:
-              span {{ answer}}
+              span(v-if="answer") {{ answer }}
+              span(v-else) 全偽
 </template>
 
 <script lang="ts">
