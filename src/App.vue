@@ -1,7 +1,7 @@
 <template lang="pug">
   div(id="app")
     v-app
-      v-toolbar
+      v-toolbar.flex-grow-0
         v-toolbar-items
           v-btn(
             exact
