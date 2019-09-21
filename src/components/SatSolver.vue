@@ -38,12 +38,6 @@ export default class Home extends Vue {
   @Prop({ type: String, required: true })
   initial: string
 
-  @Watch('initial', { immediate: true })
-  onInitial(to: string) {
-    this.text = to
-    this.flush()
-  }
-
   text: string = ''
   subject = new Subject<void>()
   answers: string[] = []
@@ -52,31 +46,43 @@ export default class Home extends Vue {
   facts: Set<string> = new Set([])
   fakes: Set<string> = new Set([])
 
-  getAttrs(variable: string) {
-    if (this.facts.has(variable)) {
-      return {
-        color: 'blue lighten-2',
-        text: false,
-        dark: true
-      }
-    } else if (this.fakes.has(variable)) {
-      return {
-        color: 'red lighten-2',
-        text: false,
-        dark: true
-      }
-    } else {
-      return {
-        text: true
-      }
-    }
-  }
-
   created() {
     this.subject
       .pipe(debounce(() => interval(1000)))
       .subscribe(this.flush.bind(this))
     this.update()
+  }
+
+  @Watch('text')
+  update() {
+    this.subject.next()
+  }
+
+  @Watch('initial', { immediate: true })
+  onInitial(to: string) {
+    this.text = to
+    this.flush()
+  }
+
+  flush() {
+    window.localStorage.text = this.text
+    this.error = ''
+
+    try {
+      const text = this.text + '\n' + Array.from(this.facts).join('\n')
+      const cnf = toCNF(ast(text))
+      const solutions = Array.from(solve(cnf))
+      const result = solutions
+        .map(solution => solution.getTrueVars())
+        .map(vars => vars.join(', '))
+      this.answers = result.sort()
+      if (solutions.length) {
+        this.variables = Object.keys(solutions[0].getMap())
+      }
+    } catch (err) {
+      this.answers = []
+      this.error = err.toString()
+    }
   }
 
   toggle(variable: string) {
@@ -98,29 +104,23 @@ export default class Home extends Vue {
     this.flush()
   }
 
-  @Watch('text')
-  update() {
-    this.subject.next()
-  }
-
-  flush() {
-    window.localStorage.text = this.text
-    this.error = ''
-
-    try {
-      const text = this.text + '\n' + Array.from(this.facts).join('\n')
-      const cnf = toCNF(ast(text))
-      const solutions = Array.from(solve(cnf))
-      const result = solutions
-        .map(solution => solution.getTrueVars())
-        .map(vars => vars.join(', '))
-      this.answers = result.sort()
-      if (solutions.length) {
-        this.variables = Object.keys(solutions[0].getMap())
+  getAttrs(variable: string) {
+    if (this.facts.has(variable)) {
+      return {
+        color: 'blue lighten-2',
+        text: false,
+        dark: true
       }
-    } catch (err) {
-      this.answers = []
-      this.error = err.toString()
+    } else if (this.fakes.has(variable)) {
+      return {
+        color: 'red lighten-2',
+        text: false,
+        dark: true
+      }
+    } else {
+      return {
+        text: true
+      }
     }
   }
 }
