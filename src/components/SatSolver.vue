@@ -27,11 +27,22 @@
 import { Component, Vue, Watch, Prop } from 'vue-property-decorator'
 import { debounce } from 'rxjs/operators'
 import { Observable, Subject, interval } from 'rxjs'
+import { contextmanager } from '@/utils/contextlib'
 
 // logic
 import { Logic, toCNF } from '@/utils/logic'
 import { solve, toFact } from '@/utils/solver'
 import { ast } from '@/utils/ast'
+
+const ShowError = contextmanager(function(exec) {
+  try {
+    exec()
+  } catch (err) {
+    this.answers = []
+    this.error = err.toString()
+    this.variables = []
+  }
+})
 
 @Component({})
 export default class Home extends Vue {
@@ -64,24 +75,20 @@ export default class Home extends Vue {
     this.flush()
   }
 
+  @ShowError
   flush() {
     window.localStorage.text = this.text
     this.error = ''
 
-    try {
-      const text = this.text + '\n' + Array.from(this.facts).join('\n')
-      const cnf = toCNF(ast(text))
-      const solutions = Array.from(solve(cnf))
-      const result = solutions
-        .map(solution => solution.getTrueVars())
-        .map(vars => vars.join(', '))
-      this.answers = result.sort()
-      if (solutions.length) {
-        this.variables = Object.keys(solutions[0].getMap())
-      }
-    } catch (err) {
-      this.answers = []
-      this.error = err.toString()
+    const text = this.text + '\n' + Array.from(this.facts).join('\n')
+    const cnf = toCNF(ast(text))
+    const solutions = Array.from(solve(cnf))
+    const result = solutions
+      .map(solution => solution.getTrueVars())
+      .map(vars => vars.join(', '))
+    this.answers = result.sort()
+    if (solutions.length) {
+      this.variables = Object.keys(solutions[0].getMap())
     }
   }
 
