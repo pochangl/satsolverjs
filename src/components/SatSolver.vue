@@ -38,7 +38,7 @@ export default class Home extends Vue {
   initial: string
 
   @Watch('initial', { immediate: true })
-  onInitial (to: string) {
+  onInitial(to: string) {
     this.text = to
     this.flush()
   }
@@ -72,31 +72,28 @@ export default class Home extends Vue {
   }
 
   created() {
-    this.subject.pipe(debounce(() => interval(1000))).subscribe(() => {
-      this.flush()
-    })
+    this.subject
+      .pipe(debounce(() => interval(1000)))
+      .subscribe(this.flush.bind(this))
     this.update()
   }
-  toggle(variable: string) {
-    const clear = () => {
-      this.facts.delete(variable)
-      this.fakes.delete(variable)
-      this.facts = new Set(Array.from(this.facts))
-      this.fakes = new Set(Array.from(this.fakes))
-    }
 
-    if (this.facts.has(variable)) {
-      // was fact
-      clear()
-      this.fakes.add(variable)
-    } else if (this.fakes.has(variable)) {
-      // was fake
-      clear()
-    } else {
-      // no bias
-      clear()
-      this.facts.add(variable)
-    }
+  toggle(variable: string) {
+    // state
+    const fact = this.facts.has(variable)
+    const fake = this.fakes.has(variable)
+
+    // cleanup
+    this.facts.delete(variable)
+    this.fakes.delete(variable)
+
+    // flush
+    this.facts = new Set(Array.from(this.facts))
+    this.fakes = new Set(Array.from(this.fakes))
+
+    // apply
+    if (fact) this.fakes.add(variable)
+    else if (!fake) this.facts.add(variable)
     this.flush()
   }
 
@@ -104,6 +101,7 @@ export default class Home extends Vue {
   update() {
     this.subject.next()
   }
+
   flush() {
     window.localStorage.text = this.text
     this.error = ''
