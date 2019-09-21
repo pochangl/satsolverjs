@@ -2,7 +2,13 @@
   div(id="app")
     v-app
       v-toolbar
-        v-toolbar-title Sat Solver
+        v-toolbar-items
+          v-btn(
+            exact
+            text
+            router
+            :to="{name: 'home'}"
+          ) Sat Solver
         v-spacer
         v-toolbar-items
           v-btn(
@@ -14,14 +20,13 @@
           ) {{ example.name }}
 
       v-container
-        router-link(to="/") Home
         router-view
 </template>
 <script lang="ts">
 import examples from '@/data/examples'
 
 export default {
-  data () {
+  data() {
     return {
       examples
     }
