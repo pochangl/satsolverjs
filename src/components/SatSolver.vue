@@ -106,6 +106,8 @@ export default class Home extends Vue {
   }
   flush() {
     window.localStorage.text = this.text
+    this.error = ''
+
     try {
       const text = this.text + '\n' + Array.from(this.facts).join('\n')
       const cnf = toCNF(ast(text))
@@ -117,7 +119,6 @@ export default class Home extends Vue {
       if (solutions.length) {
         this.variables = Object.keys(solutions[0].getMap())
       }
-      this.error = ''
     } catch (err) {
       this.answer = []
       this.error = err.toString()
