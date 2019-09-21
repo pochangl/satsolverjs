@@ -112,22 +112,16 @@ export default class Home extends Vue {
   }
 
   getAttrs(variable: string) {
-    if (this.facts.has(variable)) {
-      return {
-        color: 'blue lighten-2',
-        text: false,
-        dark: true
-      }
-    } else if (this.fakes.has(variable)) {
-      return {
-        color: 'red lighten-2',
-        text: false,
-        dark: true
-      }
-    } else {
-      return {
-        text: true
-      }
+    const fact = this.facts.has(variable)
+    const fake = this.fakes.has(variable)
+    let color
+    if (fact) color = 'blue lighten-2'
+    else if (fake) color = 'red lighten-2'
+
+    return {
+      color,
+      text: !fact && !fake, // text mode for unbiased variable
+      dark: fact || fake // dark theme for fact and and fake
     }
   }
 }
