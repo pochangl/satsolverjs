@@ -128,7 +128,7 @@ export default class Home extends Vue {
 <style lang="stylus">
 .sat-solver
   textarea
-    height: 80vh
+    height: 700px
     font-size: 24px
     line-height: 36px!important
   .flex
