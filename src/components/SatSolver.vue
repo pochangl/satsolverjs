@@ -120,7 +120,7 @@ export default class Home extends Vue {
         this.variables = Object.keys(solutions[0].getMap())
       }
     } catch (err) {
-      this.answer = []
+      this.answers = []
       this.error = err.toString()
     }
   }
