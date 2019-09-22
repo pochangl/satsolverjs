@@ -80,13 +80,22 @@ export default class Home extends Vue {
     window.localStorage.text = this.text
     this.error = ''
 
-    const text = this.text + '\n' + Array.from(this.facts).join('\n')
-    const cnf = toCNF(ast(text))
+    const cnf = toCNF(ast(this.text))
+
+    // add facts
+    Array.from(this.facts).map(cnf.addFact.bind(cnf))
+
+    // add fakes
+    Array.from(this.fakes).map(cnf.addFake.bind(cnf))
+
+    // run sat solver
     const solutions = Array.from(solve(cnf))
-    const result = solutions
+
+    // update answers
+    this.answers = solutions
       .map(solution => solution.getTrueVars())
       .map(vars => vars.join(', '))
-    this.answers = result.sort()
+      .sort()
     if (solutions.length) {
       this.variables = Object.keys(solutions[0].getMap())
     }

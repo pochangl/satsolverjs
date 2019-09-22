@@ -4,8 +4,6 @@ import { combinations } from './itertools'
 
 declare type ILogicTransformer = (ast: IAbstractSyntaxTree, clauses: Logic[]) => Logic
 
-type ICnf = And & { clauses: Or[] }
-
 interface ILogics {
   [key: string]: ILogicTransformer
 }
@@ -176,6 +174,17 @@ export class And extends Logic {
   }
 }
 
+class Cnf extends And {
+  addFact(name: string) {
+    const variable = new Variable([], name)
+    this.clauses.push(new Or([variable]))
+  }
+  addFake(name: string) {
+    const variable = new Variable([], name)
+    this.clauses.push(new Or([variable.negate()]))
+  }
+}
+
 const logics: ILogics = {
   variable(ast) {
     return new Variable([], ast.value)
@@ -235,17 +244,19 @@ function logicfy(ast: IAbstractSyntaxTree): Logic {
   )
 }
 
-export function toCNF(ast: IAbstractSyntaxTree): ICnf {
+export function toCNF(ast: IAbstractSyntaxTree): Cnf {
   /*
     conver abstract syntax tree to cnf logic
   */
-  let tree = logicfy(ast).runMerge().simplify().runMerge()
+  const tree = logicfy(ast).runMerge().simplify().runMerge()
 
   // convert first layer to and
-  tree = tree instanceof And ? tree : new And([tree])
+  const and = tree instanceof And ? tree : new And([tree])
 
   // convert second layer to or
-  tree.clauses = tree.clauses.map(clause => clause instanceof Or ? clause : new Or([clause]))
-  tree.validateCNF()
-  return tree.runMerge()
+  and.clauses = and.clauses.map(clause => clause instanceof Or ? clause : new Or([clause]))
+
+  const cnf = new Cnf(and.runMerge().clauses)
+  cnf.validateCNF()
+  return cnf
 }

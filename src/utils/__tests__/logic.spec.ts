@@ -144,4 +144,25 @@ describe('toLogicTree merging', () => {
       )
     })
   })
+
+  describe('Cnf', () => {
+    test('add fact', () => {
+      const variable = 'd'
+      const text = 'a and (b or c)'
+      const expected = '((a) and (b or c) and (d))'
+      const cnf = toCNF(ast(text))
+      cnf.addFact('d')
+      cnf.validateCNF()
+      expect(cnf.toString()).toBe(expected)
+    })
+    test.skip('add fake', () => {
+      const variable = 'd'
+      const text = 'a and (b or c)'
+      const expected = '((a) and (b or c) and ((not d)))'
+      const cnf = toCNF(ast(text))
+      cnf.addFake('d')
+      cnf.validateCNF()
+      expect(cnf.toString()).toBe(expected)
+    })
+  })
 })
