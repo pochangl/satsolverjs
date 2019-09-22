@@ -190,6 +190,14 @@ const logics: ILogics = {
       right
     ])
   },
+  iff(ast, clauses) {
+    // if and only if / bidirectional implication / biconditional
+    const [left, right] = clauses
+    return new And([
+      logics.implies(ast, [left, right]),
+      logics.implies(ast, [right, left]),
+    ])
+  },
   and(ast, clauses) {
     return new And(clauses)
   },

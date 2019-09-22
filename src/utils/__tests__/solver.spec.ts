@@ -35,6 +35,15 @@ describe('solver', () => {
         ['(a and b)'])
     })
 
+    test('a iff b', () => {
+      check_solver(
+        'a iff b',
+        [
+          '()',
+          '(a and b)',
+        ])
+    })
+
     test('a, a implies b, b implies c, c implies d', () => {
       check_solver(
         'a, a implies b, b implies c, c implies d',

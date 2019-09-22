@@ -32,10 +32,17 @@ describe('ast nested', () => {
     )
   })
 
-  test('implies/or', () => {
+  test('implies/iff', () => {
     check_ast(
-      'a or b implies c or d',
-      '((a or b) implies (c or d))'
+      'a iff b implies c iff d',
+      '((a iff b) implies (c iff d))'
+    )
+  })
+
+  test('iff/or', () => {
+    check_ast(
+      'a or b iff c or d',
+      '((a or b) iff (c or d))'
     )
   })
 

@@ -52,6 +52,12 @@ describe('toLogicTree merging', () => {
         '((a))'
       )
     })
+    test('iff', () => {
+      check_tree(
+        'a iff b',
+        '(((not a) or b) and ((not b) or a))',
+      )
+    })
   })
 
   describe('simplify', () => {

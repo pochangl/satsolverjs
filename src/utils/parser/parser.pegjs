@@ -9,7 +9,17 @@ ConjunctionNormalForm
   / Implies
 
 Implies
-  = head:Or space operator:'implies' space tail:Implies {
+  = head:IFF space operator:'implies' space tail:Implies {
+  return {
+      name: operator,
+      type: 'junction',
+      clauses: [head, tail]
+    }
+  }
+  / IFF
+
+IFF
+  = head:Or space operator:'iff' space tail:IFF {
   return {
       name: operator,
       type: 'junction',
