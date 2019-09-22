@@ -28,6 +28,7 @@
     "@babel/cli": "^7.6.0",
     "@babel/core": "^7.6.0",
     "@babel/preset-env": "^7.6.0",
+    "@fortawesome/fontawesome-free": "^5.11.1",
     "@types/jest": "^23.1.4",
     "@types/vue-resource": "^0.9.34",
     "@vue/cli-plugin-babel": "^3.11.0",

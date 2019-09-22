@@ -23,7 +23,20 @@
             :to="{name: 'example', params: {id: index + 1}}"
             text
           ) {{ example.name }}
-
+          v-btn(
+            router
+            href="https://medium.com/leep3/%E5%BE%9E-sat-solver-%E7%8E%A9-leetcode-37809cb61df"
+            target="_blank"
+            text
+          )
+            i.fab.fa-medium.fa-2x
+          v-btn(
+            router
+            href="https://github.com/pochangl/satsolverjs"
+            target="_blank"
+            text
+          )
+            i.fab.fa-github.fa-2x
       v-container
         router-view
 </template>
