@@ -7,7 +7,7 @@
     sat-solver(name="邏輯(與)" initial="a and b")
     sat-solver(name="邏輯(或)" initial="a or b")
     sat-solver(name="邏輯(非)" initial="not b")
-    sat-solver(name="字函數" initial="a and (b or c)")
+    sat-solver(name="子句" initial="a and (b or c)")
     sat-solver(name="至少一個" initial="at least 1 of { a, b, c }")
     sat-solver(name="最多一個" initial="at most 1 of { a, b, c }")
     sat-solver(name="只有一個" initial="only 1 of { a, b, c }")
