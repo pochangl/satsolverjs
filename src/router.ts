@@ -25,6 +25,11 @@ export default new Router({
       path: '/example/:id',
       name: 'example',
       component: () => import(/* webpackChunkName: "example" */ './views/Example.vue'),
+    },
+    {
+      path: '/grammar',
+      name: 'grammar',
+      component: () => import(/* webpackChunkName: "example" */ './views/Grammar.vue'),
     }
   ],
 })

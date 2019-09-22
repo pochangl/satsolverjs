@@ -12,6 +12,11 @@
         v-spacer
         v-toolbar-items
           v-btn(
+            router
+            :to="{name: 'grammar'}"
+            text
+          ) 文法表
+          v-btn(
             v-for="(example, index) in examples"
             :key="index"
             router
