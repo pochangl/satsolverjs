@@ -34,13 +34,13 @@ import { Logic, toCNF } from '@/utils/logic'
 import { solve, toFact } from '@/utils/solver'
 import { ast } from '@/utils/ast'
 
-const ShowError = contextmanager(function(exec) {
+const ShowError = contextmanager<Home>((exec, self: Home) => {
   try {
     exec()
   } catch (err) {
-    this.answers = []
-    this.error = err.toString()
-    this.variables = []
+    self.answers = []
+    self.error = err.toString()
+    self.variables = []
   }
 })
 
