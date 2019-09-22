@@ -112,6 +112,29 @@ describe('contextlib', () => {
     expect(obj.managerValue).toBe('mvalue')
   })
 
+  test('should pass decorated instance', () => {
+    const manager = contextmanager<Cls>((exec, self: Cls) => {
+      self.managerValue = 'mvalue'
+      exec()
+    })
+
+    class Cls {
+      test = 3
+      managerValue: string
+      value: number
+      @manager
+      f() {
+        this.value = 9
+      }
+    }
+    const obj = new Cls()
+    expect(obj.value).toBe(undefined)
+    expect(obj.managerValue).toBe(undefined)
+    obj.f()
+    expect(obj.value).toBe(9)
+    expect(obj.managerValue).toBe('mvalue')
+  })
+
   test('class method handling', () => {
     const pipe: number[] = []
 

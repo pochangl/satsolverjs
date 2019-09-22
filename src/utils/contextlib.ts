@@ -1,8 +1,8 @@
 
-type IContextManager = (exec: () => any) => void
-type Decorator = (target: any, key?: string, descriptor?: PropertyDescriptor) => any
+type IContextManager<T> = (exec: () => any, instance: T) => void
+type ClassMethodDecorator = (target: any, key?: string, descriptor?: PropertyDescriptor) => any
 
-function allows_class_method(decorator: IContextManager): Decorator {
+function allows_class_method<T>(decorator: (..._args) => any): ClassMethodDecorator {
   // enables function decorator to decorate class method as well
   function wrapper(target: () => any | { [key: string]: () => any }, key?: string, descriptor?: PropertyDescriptor) {
     if (descriptor) {
@@ -15,18 +15,18 @@ function allows_class_method(decorator: IContextManager): Decorator {
   return wrapper
 }
 
-export function contextmanager(managerFunction: IContextManager): Decorator {
+export function contextmanager<T>(managerFunction: IContextManager<T>): ClassMethodDecorator {
   // imitate python context manager
-  return allows_class_method((wrappedFunc: (..._args) => any) => {
-    return function decorator(...args: any[]) {
+  return allows_class_method<T>((wrappedFuncOuter: (..._args) => any) => {
+    return function (...args: any[]) {
       let result
       const executor = () => {
-        result = wrappedFunc.apply(this, args)
+        result = wrappedFuncOuter.apply(this, args)
         if (!(result instanceof Promise)) {
           return result
         }
       }
-      managerFunction.bind(this)(executor)
+      managerFunction.bind(this)(executor, this)
       return result
     }
   })
