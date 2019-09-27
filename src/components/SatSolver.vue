@@ -97,7 +97,7 @@ export default class Home extends Vue {
       .map(vars => vars.join(', '))
       .sort()
     if (solutions.length) {
-      this.variables = Object.keys(solutions[0].getMap())
+      this.variables = Object.keys(solutions[0].getMap()).sort()
     }
   }
 
