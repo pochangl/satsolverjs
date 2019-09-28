@@ -109,11 +109,7 @@ export default class Home extends Vue {
     const fact = this.facts.has(variable)
     const fake = this.fakes.has(variable)
 
-    // cleanup
-    this.facts.delete(variable)
-    this.fakes.delete(variable)
-
-    this.flushPremises()
+    this.flushPremises(variable)
 
     // apply
     if (fact) this.addFake(variable)
@@ -126,7 +122,11 @@ export default class Home extends Vue {
   addFact(variable: string) {
     this.facts.add(variable)
   }
-  flushPremises () {
+  flushPremises (variable: string) {
+    // cleanup
+    this.facts.delete(variable)
+    this.fakes.delete(variable)
+
     // flush
     this.facts = new Set(Array.from(this.facts))
     this.fakes = new Set(Array.from(this.fakes))
