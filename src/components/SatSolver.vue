@@ -109,17 +109,20 @@ export default class Home extends Vue {
     const fact = this.facts.has(variable)
     const fake = this.fakes.has(variable)
 
-    this.flushPremises(variable)
-
     // apply
     if (fact) this.addFake(variable)
     else if (!fake) this.addFact(variable)
+    else this.flushPremises(variable)
+
+    // update
     this.flush()
   }
   addFake(variable: string) {
+    this.flushPremises(variable)
     this.fakes.add(variable)
   }
   addFact(variable: string) {
+    this.flushPremises(variable)
     this.facts.add(variable)
   }
   flushPremises (variable: string) {
