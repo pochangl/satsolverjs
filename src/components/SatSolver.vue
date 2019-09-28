@@ -118,9 +118,15 @@ export default class Home extends Vue {
     this.fakes = new Set(Array.from(this.fakes))
 
     // apply
-    if (fact) this.fakes.add(variable)
-    else if (!fake) this.facts.add(variable)
+    if (fact) this.addFake(variable)
+    else if (!fake) this.addFact(variable)
     this.flush()
+  }
+  addFake(variable: string) {
+    this.fakes.add(variable)
+  }
+  addFact(variable: string) {
+    this.facts.add(variable)
   }
 
   getAttrs(variable: string) {
