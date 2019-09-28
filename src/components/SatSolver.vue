@@ -141,10 +141,10 @@ export default class Home extends Vue {
       dark: fact || fake // dark theme for fact and and fake
     }
   }
-  get choice_(): { name: string; variables: string[] }[] {
+  get choice_(): Array<{ name: string; variables: string[] }> {
     return Object.keys(this.choices).map(name => ({
       name,
-      variables: this.choices[name] as string[]
+      variables: this.choices[name]
     }))
   }
 }
