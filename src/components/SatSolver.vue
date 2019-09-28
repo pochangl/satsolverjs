@@ -50,6 +50,12 @@ const ShowError = contextmanager<Home>((exec, vm: Home) => {
 
 const Flush = contextmanager<Home>((exec, vm: Home) => {
   exec()
+
+  // flush variables
+  vm.facts = new Set(Array.from(vm.facts))
+  vm.fakes = new Set(Array.from(vm.fakes))
+
+  // update vm
   vm.flush()
 })
 
@@ -135,10 +141,6 @@ export default class Home extends Vue {
     // cleanup
     this.facts.delete(variable)
     this.fakes.delete(variable)
-
-    // flush
-    this.facts = new Set(Array.from(this.facts))
-    this.fakes = new Set(Array.from(this.fakes))
   }
 
   getAttrs(variable: string) {
