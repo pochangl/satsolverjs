@@ -69,18 +69,13 @@ export default class Home extends Vue {
     this.subject
       .pipe(debounce(() => interval(1000)))
       .subscribe(this.flush.bind(this))
-    this.update()
+    this.text = this.initial
+    this.flush()
   }
 
   @Watch('text')
   update() {
     this.subject.next()
-  }
-
-  @Watch('initial', { immediate: true })
-  onInitial(to: string) {
-    this.text = to
-    this.flush()
   }
 
   @ShowError
