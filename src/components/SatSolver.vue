@@ -48,6 +48,11 @@ const ShowError = contextmanager<Home>((exec, vm: Home) => {
   }
 })
 
+const Flush = contextmanager<Home>((exec, vm: Home) => {
+  exec()
+  vm.flush()
+})
+
 @Component({})
 export default class Home extends Vue {
   @Prop({ type: String, required: true })
@@ -65,12 +70,12 @@ export default class Home extends Vue {
   facts: Set<string> = new Set([])
   fakes: Set<string> = new Set([])
 
+  @Flush
   created() {
     this.subject
       .pipe(debounce(() => interval(1000)))
       .subscribe(this.flush.bind(this))
     this.text = this.initial
-    this.flush()
   }
 
   @Watch('text')
@@ -104,6 +109,7 @@ export default class Home extends Vue {
     }
   }
 
+  @Flush
   toggle(variable: string) {
     // state
     const fact = this.facts.has(variable)
@@ -113,9 +119,6 @@ export default class Home extends Vue {
     if (fact) this.addFake(variable)
     else if (!fake) this.addFact(variable)
     else this.flushPremises(variable)
-
-    // update
-    this.flush()
   }
 
   addFake(variable: string) {
