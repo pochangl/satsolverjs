@@ -38,13 +38,13 @@ import { Logic, toCNF } from '@/utils/logic'
 import { solve, toFact } from '@/utils/solver'
 import { ast } from '@/utils/ast'
 
-const ShowError = contextmanager<Home>((exec, self: Home) => {
+const ShowError = contextmanager<Home>((exec, vm: Home) => {
   try {
     exec()
   } catch (err) {
-    self.answers = []
-    self.error = err.toString()
-    self.variables = []
+    vm.answers = []
+    vm.error = err.toString()
+    vm.variables = []
   }
 })
 
@@ -117,14 +117,17 @@ export default class Home extends Vue {
     // update
     this.flush()
   }
+
   addFake(variable: string) {
     this.flushPremises(variable)
     this.fakes.add(variable)
   }
+
   addFact(variable: string) {
     this.flushPremises(variable)
     this.facts.add(variable)
   }
+
   flushPremises (variable: string) {
     // cleanup
     this.facts.delete(variable)
@@ -148,6 +151,7 @@ export default class Home extends Vue {
       dark: fact || fake // dark theme for fact and and fake
     }
   }
+
   get choice_(): Array<{ name: string; variables: string[] }> {
     return Object.keys(this.choices).map(name => ({
       name,
