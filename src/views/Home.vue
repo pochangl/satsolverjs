@@ -1,5 +1,5 @@
 <template lang="pug">
-  sat-solver(:initial="text")
+  sat-solver(:initial="text" :key="$router.path")
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
