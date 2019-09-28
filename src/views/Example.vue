@@ -1,5 +1,5 @@
 <template lang="pug">
-  sat-solver(:initial="text" :key="$router.path")
+  sat-solver(:initial="text" :key="$router.path" :choices="example.choices")
 </template>
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator'

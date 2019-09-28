@@ -4,6 +4,10 @@
       v-col(:cols="6")
         v-textarea(v-model="text" label="命題邏輯" outlined counter)
         p.error--text {{ error }}
+        v-container(v-if="choices")
+          v-row(v-for="choice in choice_" :key="choice.name" justify="start")
+            v-col.flex-grow-0 {{ choice.name }}:
+            v-col.flex-grow-0(v-for="variable in choice.variables" :key="variable") {{ variable }}
       v-col(:cols="6")
         p 共 {{ answers.length }} 解, {{ variables.length }} 個變數
         v-layout.py-2(row justify-start align-center)
@@ -48,6 +52,10 @@ const ShowError = contextmanager<Home>((exec, self: Home) => {
 export default class Home extends Vue {
   @Prop({ type: String, required: true })
   initial: string
+  @Prop({ required: false })
+  choices: {
+    [key: string]: string[]
+  }
 
   text: string = ''
   subject = new Subject<void>()
@@ -132,6 +140,12 @@ export default class Home extends Vue {
       text: !fact && !fake, // text mode for unbiased variable
       dark: fact || fake // dark theme for fact and and fake
     }
+  }
+  get choice_(): { name: string; variables: string[] }[] {
+    return Object.keys(this.choices).map(name => ({
+      name,
+      variables: this.choices[name] as string[]
+    }))
   }
 }
 </script>

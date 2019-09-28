@@ -1,6 +1,9 @@
 export interface IExample {
   name: string,
-  text: string
+  text: string,
+  choices?: {
+    [key: string]: string[]
+  }
 }
 
 const examples: IExample[] = [
@@ -88,7 +91,10 @@ const examples: IExample[] = [
       C=3.0 implies A=1.0 or A=1.1 or B=2.0
       C=3.1 implies A=1.1
       C=3.1 implies B=2.4
-    `
+    `,
+    choices: {
+      'C': ['C=3.0', 'C=3.1']
+    }
   }
 ]
 for (const example of examples) {
